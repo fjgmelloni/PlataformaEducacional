@@ -1,4 +1,4 @@
-﻿namespace PlataformaEducacao.Core.Data
+﻿namespace PlataformaEducacional.Core.Data
 {
     public interface IUnitOfWork
     {

@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PlataformaEducacional.ContentManagement.Domain\PlataformaEducacional.ContentManagement.Domain.csproj" />
+    <ProjectReference Include="..\PlataformaEducacional.Core\PlataformaEducacional.Core.csproj" />
   </ItemGroup>
 
 </Project>

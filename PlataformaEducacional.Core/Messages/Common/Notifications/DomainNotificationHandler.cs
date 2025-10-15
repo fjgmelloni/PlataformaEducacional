@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using MediatR;
 
-namespace PlataformaEducacao.Core.Messages.CommonMessages.Notifications
+namespace PlataformaEducacional.Core.Messages.CommonMessages.Notifications
 {
     public sealed class DomainNotificationHandler : INotificationHandler<DomainNotification>
     {

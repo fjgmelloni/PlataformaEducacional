@@ -1,21 +1,28 @@
-﻿public sealed class MatricularAlunoCommand : PlataformaEducacao.Core.Messages.Command
-{
-    public Guid AlunoId { get; }
-    public Guid CursoId { get; }
+﻿using MediatR;
+using PlataformaEducacional.Core.Messages.Base;
+using System;
+using System.Collections.Generic;
 
-    public MatricularAlunoCommand(Guid alunoId, Guid cursoId)
+namespace PlataformaEducacao.Core.Messages
+{
+    public abstract class Command : Message, IRequest<bool>
     {
-        AlunoId = alunoId;
-        CursoId = cursoId;
-        AggregateId = alunoId;
+        public DateTime Timestamp { get; private set; }
+        public ValidationResult ValidationResult { get; protected set; } = new();
+
+        protected Command()
+        {
+            Timestamp = DateTime.UtcNow;
+        }
+
+        public virtual bool IsValid() => ValidationResult.IsValid;
     }
-}
-
-public sealed class MatricularAlunoHandler : MediatR.IRequestHandler<MatricularAlunoCommand, bool>
-{
-    public async Task<bool> Handle(MatricularAlunoCommand request, CancellationToken ct)
+    public sealed class ValidationResult
     {
+        public bool IsValid => Errors.Count == 0;
+        public List<string> Errors { get; } = new();
 
-        return await Task.FromResult(true);
+        public void AddError(string message) => Errors.Add(message);
+        public void AddErrors(IEnumerable<string> messages) => Errors.AddRange(messages);
     }
 }

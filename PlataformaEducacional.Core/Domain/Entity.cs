@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using PlataformaEducacao.Core.Messages;
+using PlataformaEducacional.Core.Messages;
 
-namespace PlataformaEducacao.Core.Domain
+namespace PlataformaEducacional.Core.Domain
 {
     public abstract class Entity
     {

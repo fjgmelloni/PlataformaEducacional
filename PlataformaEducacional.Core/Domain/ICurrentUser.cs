@@ -1,4 +1,4 @@
-﻿namespace PlataformaEducacao.Core.Domain
+﻿namespace PlataformaEducacional.Core.Domain
 {
     public interface ICurrentUser
     {

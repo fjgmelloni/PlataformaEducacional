@@ -1,7 +1,7 @@
 ﻿using PlataformaEducacional.Core.Messages.Common.IntegrationEvents;
 using System;
 
-namespace PlataformaEducacao.Core.Messages.CommonMessages.IntegrationEvents
+namespace PlataformaEducacional.Core.Messages.CommonMessages.IntegrationEvents
 {
     public sealed class EnrollmentPaymentCompletedEvent : IntegrationEvent
     {

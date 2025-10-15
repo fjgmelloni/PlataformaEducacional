@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using PlataformaEducacao.Core.Messages;
+using PlataformaEducacional.Core.Messages;
 using PlataformaEducacional.Core.Messages.Common.DomainEvents;
 
-namespace PlataformaEducacao.Core.Communication.Mediator
+namespace PlataformaEducacional.Core.Communication.Mediator
 {
     public interface IMediatorHandler
     {

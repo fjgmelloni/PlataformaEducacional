@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PlataformaEducacao.Core.Domain.DTO
+namespace PlataformaEducacional.Core.Domain.DTO
 {
     public sealed record EnrollmentPayment(
         Guid EnrollmentId,

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PlataformaEducacao.Core.Domain
+namespace PlataformaEducacional.Core.Domain
 {
     public static class Guard
     {

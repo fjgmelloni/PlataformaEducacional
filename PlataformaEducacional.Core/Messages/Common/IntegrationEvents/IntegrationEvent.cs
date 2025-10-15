@@ -1,4 +1,4 @@
-﻿using PlataformaEducacao.Core.Messages;
+﻿using PlataformaEducacional.Core.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;

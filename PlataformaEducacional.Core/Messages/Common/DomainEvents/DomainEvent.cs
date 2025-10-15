@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using PlataformaEducacao.Core.Messages.Base;
+using PlataformaEducacional.Core.Messages.Base;
 
 namespace PlataformaEducacional.Core.Messages.Common.DomainEvents
 {

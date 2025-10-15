@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using PlataformaEducacao.Core.Messages.Base;
+using PlataformaEducacional.Core.Messages.Base;
 
-namespace PlataformaEducacao.Core.Messages.CommonMessages.Notifications
+namespace PlataformaEducacional.Core.Messages.CommonMessages.Notifications
 {
     public sealed class DomainNotification : Message, INotification
     {

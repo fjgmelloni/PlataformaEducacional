@@ -1,7 +1,7 @@
 ﻿using System;
-using PlataformaEducacao.Core.Domain;
+using PlataformaEducacional.Core.Domain;
 
-namespace PlataformaEducacao.Core.Data
+namespace PlataformaEducacional.Core.Data
 {
     public interface IRepository<T> : IDisposable where T : IAggregateRoot
     {
