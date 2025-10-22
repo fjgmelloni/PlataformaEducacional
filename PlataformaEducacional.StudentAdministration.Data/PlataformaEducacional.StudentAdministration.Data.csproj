@@ -7,9 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\**" />
-    <EmbeddedResource Remove="Migrations\**" />
-    <None Remove="Migrations\**" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PlataformaEducacional.ContentManagement.Domain\PlataformaEducacional.ContentManagement.Domain.csproj" />
     <ProjectReference Include="..\PlataformaEducacional.Core\PlataformaEducacional.Core.csproj" />
+    <ProjectReference Include="..\PlataformaEducacional.StudentAdministration.Domain\PlataformaEducacional.StudentAdministration.Domain.csproj" />
   </ItemGroup>
 
 </Project>

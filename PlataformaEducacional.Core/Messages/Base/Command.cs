@@ -1,9 +1,10 @@
 ﻿using MediatR;
+using PlataformaEducacional.Core.Messages;
 using PlataformaEducacional.Core.Messages.Base;
 using System;
 using System.Collections.Generic;
 
-namespace PlataformaEducacao.Core.Messages
+namespace PlataformaEducacional.Core.Messages.Base
 {
     public abstract class Command : Message, IRequest<bool>
     {
