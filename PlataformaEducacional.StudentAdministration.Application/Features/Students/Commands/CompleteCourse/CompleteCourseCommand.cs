@@ -1,31 +1,44 @@
 ﻿using FluentValidation;
-using PlataformaEducacional.Core.Messages;
+using PlataformaEducacional.Core.Messages.Base;
+using PlataformaEducacional.StudentAdministration.Application.Features.Students.Commands.PerformLesson;
 
 namespace PlataformaEducacional.StudentAdministration.Application.Features.Students.Commands.CompleteCourse
 {
-    public class CompleteCourseCommand : Command
+    public sealed class CompleteCourseCommand : Command
     {
-        public CompleteCourseCommand(Guid enrollmentId)
+        public CompleteCourseCommand(Guid enrollmentId, Guid studentId)
         {
             EnrollmentId = enrollmentId;
+            StudentId = studentId;
         }
 
-        public Guid EnrollmentId { get; private set; }
+        public Guid EnrollmentId { get; }
+        public Guid StudentId { get; }
 
         public override bool IsValid()
         {
-            ValidationResult = new CompleteCourseCommandValidation().Validate(this);
+            var result = new CompleteCourseCommandValidator().Validate(this);
+            ValidationResult.Errors.Clear();
+            if (!result.IsValid)
+            {
+                foreach (var error in result.Errors)
+                    ValidationResult.AddError(error.ErrorMessage);
+            }
             return ValidationResult.IsValid;
         }
     }
 
-    public class CompleteCourseCommandValidation : AbstractValidator<CompleteCourseCommand>
+    public sealed class CompleteCourseCommandValidator : AbstractValidator<CompleteCourseCommand>
     {
-        public CompleteCourseCommandValidation()
+        public CompleteCourseCommandValidator()
         {
+            RuleFor(c => c.StudentId)
+                .NotEmpty()
+                .WithMessage("O ID do aluno é obrigatório.");
+
             RuleFor(c => c.EnrollmentId)
-                .NotEqual(Guid.Empty)
-                .WithMessage("Enrollment ID must be valid.");
+                .NotEmpty()
+                .WithMessage("O ID da matrícula é obrigatório.");
         }
     }
 }

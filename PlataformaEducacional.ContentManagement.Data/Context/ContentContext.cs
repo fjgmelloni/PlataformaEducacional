@@ -2,7 +2,7 @@
 using PlataformaEducacional.ContentManagement.Domain.Courses;
 using PlataformaEducacional.ContentManagement.Domain.Lessons;
 using PlataformaEducacional.Core.Data;
-using PlataformaEducacional.Core.Messages;
+using PlataformaEducacional.Core.Messages.Base;
 
 namespace PlataformaEducacao.ContentManagement.Data.Context
 {

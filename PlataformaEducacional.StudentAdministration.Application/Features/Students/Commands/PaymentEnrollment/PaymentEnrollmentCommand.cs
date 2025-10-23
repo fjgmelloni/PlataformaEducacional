@@ -1,11 +1,11 @@
 ﻿using FluentValidation;
 using PlataformaEducacional.Core.Messages.Base;
 
-namespace PlataformaEducacional.StudentAdministration.Application.Features.Students.Commands.CancelEnrollment
+namespace PlataformaEducacional.StudentAdministration.Application.Features.Students.Commands.PaymentEnrollment
 {
-    public sealed class CancelEnrollmentCommand : Command
+    public sealed class PaymentEnrollmentCommand : Command
     {
-        public CancelEnrollmentCommand(Guid enrollmentId, Guid studentId)
+        public PaymentEnrollmentCommand(Guid enrollmentId, Guid studentId)
         {
             EnrollmentId = enrollmentId;
             StudentId = studentId;
@@ -16,33 +16,27 @@ namespace PlataformaEducacional.StudentAdministration.Application.Features.Stude
 
         public override bool IsValid()
         {
-            var result = new CancelEnrollmentCommandValidator().Validate(this);
-
+            var result = new PaymentEnrollmentCommandValidator().Validate(this);
             ValidationResult.Errors.Clear();
-
             if (!result.IsValid)
             {
                 foreach (var error in result.Errors)
-                {
                     ValidationResult.AddError(error.ErrorMessage);
-                }
             }
-
             return ValidationResult.IsValid;
         }
+
     }
 
-    public sealed class CancelEnrollmentCommandValidator : AbstractValidator<CancelEnrollmentCommand>
+    public sealed class PaymentEnrollmentCommandValidator : AbstractValidator<PaymentEnrollmentCommand>
     {
-        public CancelEnrollmentCommandValidator()
+        public PaymentEnrollmentCommandValidator()
         {
             RuleFor(c => c.StudentId)
-                .NotEmpty()
-                .WithMessage("Student ID is required.");
+                .NotEmpty().WithMessage("O ID do aluno é obrigatório.");
 
             RuleFor(c => c.EnrollmentId)
-                .NotEmpty()
-                .WithMessage("Enrollment ID is required.");
+                .NotEmpty().WithMessage("O ID da matrícula é obrigatório.");
         }
     }
 }

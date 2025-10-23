@@ -1,4 +1,4 @@
-﻿using PlataformaEducacional.Core.DomainObjects;
+﻿using PlataformaEducacional.Core.Domain;
 
 namespace PlataformaEducacional.StudentAdministration.Domain
 {
@@ -38,8 +38,8 @@ namespace PlataformaEducacional.StudentAdministration.Domain
 
         protected void Validate()
         {
-            Validations.ValidateIfEmpty(Id, "The student ID is required.");
-            Validations.ValidateIfEmpty(Name, "The student name is required.");
+            Guard.AgainstEmpty(Id, "The student ID is required.");
+            Guard.AgainstNullOrWhiteSpace(Name, "The student name is required.");
         }
     }
 }

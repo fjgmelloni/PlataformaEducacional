@@ -1,7 +1,7 @@
-﻿using PlataformaEducacao.Core.Messages;
+﻿using PlataformaEducacional.Core.Messages.Base;
 
 
-namespace PlataformaEducacao.ContentManagement.Application.Features.Courses.Commands.UpdateCourse
+namespace PlataformaEducacional.ContentManagement.Application.Features.Courses.Commands.UpdateCourse
 {
     public sealed class UpdateCourseCommand : Command
     {

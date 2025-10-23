@@ -1,4 +1,4 @@
-﻿using PlataformaEducacional.Core.DomainObjects;
+﻿using PlataformaEducacional.Core.Domain;
 
 namespace PlataformaEducacional.StudentAdministration.Domain
 {
@@ -15,13 +15,13 @@ namespace PlataformaEducacional.StudentAdministration.Domain
         {
             LessonId = lessonId;
             CompletionDate = DateTime.Now;
-            Validations.ValidateIfEmpty(LessonId, "Lesson ID is required.");
+            Guard.AgainstEmpty(LessonId, "Lesson ID is required.");
         }
 
         public void AssignEnrollment(Guid enrollmentId)
         {
             EnrollmentId = enrollmentId;
-            Validations.ValidateIfEmpty(EnrollmentId, "Enrollment ID is required.");
+            Guard.AgainstEmpty(EnrollmentId, "Enrollment ID is required.");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using PlataformaEducacional.Core.DomainObjects;
+﻿using PlataformaEducacional.Core.Domain;
 
 namespace PlataformaEducacional.StudentAdministration.Domain
 {
@@ -94,9 +94,9 @@ namespace PlataformaEducacional.StudentAdministration.Domain
 
         protected void Validate()
         {
-            Validations.ValidateIfEmpty(CourseId, "Course ID is required.");
-            Validations.ValidateIfEmpty(CourseName, "Course name is required.");
-            Validations.ValidateIfLessOrEqual(Value, 0, "Course value must be greater than zero.");
+            Guard.AgainstEmpty(CourseId, "Course ID is required.");
+            Guard.AgainstNullOrWhiteSpace(CourseName, "Course name is required.");
+            Guard.AgainstLessOrEqual(Value, 0, "Course value must be greater than zero.");
         }
     }
 }

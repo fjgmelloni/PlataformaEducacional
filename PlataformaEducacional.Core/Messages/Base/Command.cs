@@ -1,6 +1,5 @@
 ﻿using MediatR;
-using PlataformaEducacional.Core.Messages;
-using PlataformaEducacional.Core.Messages.Base;
+using FluentValidation.Results;
 using System;
 using System.Collections.Generic;
 
@@ -9,7 +8,7 @@ namespace PlataformaEducacional.Core.Messages.Base
     public abstract class Command : Message, IRequest<bool>
     {
         public DateTime Timestamp { get; private set; }
-        public ValidationResult ValidationResult { get; protected set; } = new();
+        public ValidationResultCustom ValidationResult { get; protected set; } = new();
 
         protected Command()
         {
@@ -18,7 +17,8 @@ namespace PlataformaEducacional.Core.Messages.Base
 
         public virtual bool IsValid() => ValidationResult.IsValid;
     }
-    public sealed class ValidationResult
+
+    public sealed class ValidationResultCustom
     {
         public bool IsValid => Errors.Count == 0;
         public List<string> Errors { get; } = new();

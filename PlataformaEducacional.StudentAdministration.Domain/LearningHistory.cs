@@ -1,4 +1,4 @@
-﻿using PlataformaEducacional.Core.DomainObjects;
+﻿using PlataformaEducacional.Core.Domain;
 
 namespace PlataformaEducacional.StudentAdministration.Domain
 {
@@ -58,7 +58,7 @@ namespace PlataformaEducacional.StudentAdministration.Domain
 
         protected void Validate()
         {
-            Validations.ValidateIfLessOrEqual(TotalLessons, 0, "The course must have more than 0 lessons.");
+            Guard.AgainstLessOrEqual(TotalLessons, 0, "The course must have more than 0 lessons.");
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using PlataformaEducacional.Core.Communication.Mediator;
-using PlataformaEducacional.Core.DomainObjects;
+using PlataformaEducacional.Core.Domain;
 
 namespace PlataformaEducacional.StudentAdministration.Data
 {
@@ -9,18 +9,18 @@ namespace PlataformaEducacional.StudentAdministration.Data
         {
             var domainEntities = ctx.ChangeTracker
                 .Entries<Entity>()
-                .Where(x => x.Entity.Notifications != null && x.Entity.Notifications.Any());
-
-            var domainEvents = domainEntities
-                .SelectMany(x => x.Entity.Notifications)
+                .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Any())
                 .ToList();
 
-            domainEntities.ToList()
-                .ForEach(entity => entity.Entity.ClearEvents());
+            var domainEvents = domainEntities
+                .SelectMany(x => x.Entity.DomainEvents)
+                .ToList();
 
-            var tasks = domainEvents.Select(async (domainEvent) =>
+            domainEntities.ForEach(entity => entity.Entity.ClearDomainEvents());
+
+            var tasks = domainEvents.Select(async domainEvent =>
             {
-                await mediator.PublishEvent(domainEvent);
+                await mediator.PublishEventAsync(domainEvent);
             });
 
             await Task.WhenAll(tasks);

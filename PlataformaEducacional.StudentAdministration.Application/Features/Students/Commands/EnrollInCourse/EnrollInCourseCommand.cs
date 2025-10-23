@@ -1,66 +1,57 @@
-﻿using MediatR;
-using PlataformaEducacional.Core.Communication.Mediator;
-using PlataformaEducacional.Core.Messages;
-using PlataformaEducacional.Core.Messages.CommonMessages.Notifications;
-using PlataformaEducacional.StudentAdministration.Domain;
-using PlataformaEducacional.StudentAdministration.Domain.Repositories;
+﻿using FluentValidation;
+using PlataformaEducacional.Core.Messages.Base;
 
 namespace PlataformaEducacional.StudentAdministration.Application.Features.Students.Commands.EnrollInCourse
 {
-    public class EnrollInCourseCommandHandler : IRequestHandler<EnrollInCourseCommand, bool>
+    public sealed class EnrollInCourseCommand : Command
     {
-        private readonly IStudentRepository _studentRepository;
-        private readonly ICourseRepository _courseRepository;
-        private readonly IMediatorHandler _mediatorHandler;
-
-        public EnrollInCourseCommandHandler(
-            IStudentRepository studentRepository,
-            ICourseRepository courseRepository,
-            IMediatorHandler mediatorHandler)
+        public EnrollInCourseCommand(Guid studentId, Guid courseId, string courseName, int totalLessons, decimal value)
         {
-            _studentRepository = studentRepository;
-            _courseRepository = courseRepository;
-            _mediatorHandler = mediatorHandler;
+            StudentId = studentId;
+            CourseId = courseId;
+            CourseName = courseName;
+            TotalLessons = totalLessons;
+            Value = value;
         }
 
-        public async Task<bool> Handle(EnrollInCourseCommand message, CancellationToken cancellationToken)
+        public Guid StudentId { get; }
+        public Guid CourseId { get; }
+        public string CourseName { get; }
+        public int TotalLessons { get; }
+        public decimal Value { get; }
+
+        public override bool IsValid()
         {
-            if (!ValidateCommand(message))
-                return false;
-
-            var student = await _studentRepository.GetByIdAsync(message.StudentId, cancellationToken);
-            if (student is null)
+            var result = new EnrollInCourseCommandValidator().Validate(this);
+            ValidationResult.Errors.Clear();
+            if (!result.IsValid)
             {
-                await _mediatorHandler.PublishNotification(new DomainNotification("student", "Student not found!"));
-                return false;
+                foreach (var error in result.Errors)
+                    ValidationResult.AddError(error.ErrorMessage);
             }
-
-            var course = await _courseRepository.GetByIdAsync(message.CourseId, cancellationToken);
-            if (course is null)
-            {
-                await _mediatorHandler.PublishNotification(new DomainNotification("course", "Course not found!"));
-                return false;
-            }
-
-            var enrollment = new Enrollment(message.StudentId, message.CourseId);
-
-            await _studentRepository.EnrollStudentInCourse(enrollment, cancellationToken);
-
-            return await _studentRepository.UnitOfWork.Commit();
+            return ValidationResult.IsValid;
         }
 
-        private bool ValidateCommand(Command message)
+    }
+
+    public sealed class EnrollInCourseCommandValidator : AbstractValidator<EnrollInCourseCommand>
+    {
+        public EnrollInCourseCommandValidator()
         {
-            if (message.IsValid()) return true;
+            RuleFor(c => c.StudentId)
+                .NotEmpty().WithMessage("O ID do aluno é obrigatório.");
 
-            foreach (var error in message.ValidationResult.Errors)
-            {
-                _mediatorHandler.PublishNotification(
-                    new DomainNotification(message.MessageType, error.ErrorMessage)
-                );
-            }
+            RuleFor(c => c.CourseId)
+                .NotEmpty().WithMessage("O ID do curso é obrigatório.");
 
-            return false;
+            RuleFor(c => c.CourseName)
+                .NotEmpty().WithMessage("O nome do curso é obrigatório.");
+
+            RuleFor(c => c.TotalLessons)
+                .GreaterThan(0).WithMessage("O curso deve ter pelo menos uma aula.");
+
+            RuleFor(c => c.Value)
+                .GreaterThan(0).WithMessage("O valor do curso deve ser maior que zero.");
         }
     }
 }

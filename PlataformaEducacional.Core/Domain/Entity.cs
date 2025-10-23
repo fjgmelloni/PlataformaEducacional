@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using PlataformaEducacional.Core.Messages;
+using PlataformaEducacional.Core.Messages.Base;
 
 namespace PlataformaEducacional.Core.Domain
 {
     public abstract class Entity
     {
-        public Guid Id { get; private set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
+        protected Entity()
+        {
+            Id = Guid.NewGuid();
+        }
 
         private readonly List<Event> _domainEvents = new();
         public IReadOnlyCollection<Event> DomainEvents => _domainEvents.AsReadOnly();

@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using PlataformaEducacao.Core.Messages;
-using PlataformaEducacao.ContentManagement.Application.Features.Courses.Commands.AddCourse;
-using PlataformaEducacao.ContentManagement.Application.Features.Courses.Commands.UpdateCourse;
-using PlataformaEducacao.ContentManagement.Application.Features.Courses.Commands.AddLesson;
+using PlataformaEducacional.Core.Messages.Base;
+using PlataformaEducacional.ContentManagement.Application.Features.Courses.Commands.AddCourse;
+using PlataformaEducacional.ContentManagement.Application.Features.Courses.Commands.UpdateCourse;
+using PlataformaEducacional.ContentManagement.Application.Features.Courses.Commands.AddLesson;
 using PlataformaEducacional.ContentManagement.Domain.Courses;
 using PlataformaEducacional.ContentManagement.Domain.Lessons;
 using PlataformaEducacional.ContentManagement.Domain.ValueObjects;

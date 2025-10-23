@@ -2,17 +2,16 @@
 using PlataformaEducacional.Core.Communication.Mediator;
 using PlataformaEducacional.Core.Messages.Base;
 using PlataformaEducacional.Core.Messages.CommonMessages.Notifications;
-using PlataformaEducacional.StudentAdministration.Domain;
 using PlataformaEducacional.StudentAdministration.Domain.Repositories;
 
-namespace PlataformaEducacional.StudentAdministration.Application.Features.Students.Commands.GenerateCertificate
+namespace PlataformaEducacional.StudentAdministration.Application.Features.Students.Commands.PaymentEnrollment
 {
-    public sealed class GenerateCertificateCommandHandler : IRequestHandler<GenerateCertificateCommand, bool>
+    public sealed class PaymentEnrollmentCommandHandler : IRequestHandler<PaymentEnrollmentCommand, bool>
     {
         private readonly IStudentRepository _studentRepository;
         private readonly IMediatorHandler _mediatorHandler;
 
-        public GenerateCertificateCommandHandler(
+        public PaymentEnrollmentCommandHandler(
             IStudentRepository studentRepository,
             IMediatorHandler mediatorHandler)
         {
@@ -20,30 +19,21 @@ namespace PlataformaEducacional.StudentAdministration.Application.Features.Stude
             _mediatorHandler = mediatorHandler;
         }
 
-        public async Task<bool> Handle(GenerateCertificateCommand command, CancellationToken cancellationToken)
+        public async Task<bool> Handle(PaymentEnrollmentCommand command, CancellationToken cancellationToken)
         {
             if (!ValidateCommand(command))
                 return false;
 
-            var enrollment = await _studentRepository.GetEnrollmentWithCertificateById(command.EnrollmentId, cancellationToken);
+            var enrollment = await _studentRepository.GetEnrollmentWithStudentById(command.EnrollmentId, cancellationToken);
             if (enrollment is null)
             {
                 await _mediatorHandler.PublishNotificationAsync(
-                    new DomainNotification("Certificate", "Matrícula não encontrada.")
+                    new DomainNotification("Payment", "Matrícula não encontrada.")
                 );
                 return false;
             }
 
-            if (enrollment.Certificate != null)
-            {
-                await _mediatorHandler.PublishNotificationAsync(
-                    new DomainNotification("Certificate", "Certificado já foi gerado.")
-                );
-                return false;
-            }
-
-            var certificate = new Certificate(enrollment.Id);
-            await _studentRepository.GenerateCertificateAsync(certificate, cancellationToken);
+            enrollment.StartPayment();
             return await _studentRepository.UnitOfWork.Commit();
         }
 

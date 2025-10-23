@@ -1,8 +1,16 @@
 ﻿using MediatR;
 using PlataformaEducacional.Core.Messages.Base;
 
-namespace PlataformaEducacional.Core.Messages
+
+namespace PlataformaEducacional.Core.Messages.Base
 {
-    public abstract class Command : Message, IRequest<bool> { protected Command() : base() { } }
-    public abstract class Event : Message, INotification { protected Event() : base() { } }
+    public abstract class Event :Message, INotification
+    {
+        public DateTime Timestamp { get; private set; }
+
+        protected Event()
+        {
+            Timestamp = DateTime.Now;
+        }
+    }
 }

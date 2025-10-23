@@ -1,4 +1,4 @@
-﻿using PlataformaEducacional.Core.Messages;
+﻿using PlataformaEducacional.Core.Messages.Base;
 
 namespace PlataformaEducacional.StudentAdministration.Application.Features.Students.Events
 {

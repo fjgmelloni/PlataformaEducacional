@@ -1,37 +1,49 @@
 ﻿using FluentValidation;
-using PlataformaEducacional.Core.Messages;
+using PlataformaEducacional.Core.Messages.Base;
 
-namespace EducationalPlatform.StudentAdministration.Application.Features.Students.Commands.CancelEnrollment
+namespace PlataformaEducacional.StudentAdministration.Application.Features.Students.Commands.AddStudent
 {
-    public class CancelEnrollmentCommand : Command
+    public sealed class AddStudentCommand : Command
     {
-        public CancelEnrollmentCommand(Guid enrollmentId, Guid studentId)
+        public AddStudentCommand(Guid userId, string name)
         {
-            EnrollmentId = enrollmentId;
-            StudentId = studentId;
+            UserId = userId;
+            Name = name;
         }
 
-        public Guid EnrollmentId { get; private set; }
-        public Guid StudentId { get; private set; }
+        public Guid UserId { get; }
+        public string Name { get; }
 
         public override bool IsValid()
         {
-            ValidationResult = new CancelEnrollmentCommandValidation().Validate(this);
+            var result = new AddStudentCommandValidator().Validate(this);
+
+            ValidationResult.Errors.Clear();
+
+            if (!result.IsValid)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ValidationResult.AddError(error.ErrorMessage);
+                }
+            }
+
             return ValidationResult.IsValid;
         }
+
     }
 
-    public class CancelEnrollmentCommandValidation : AbstractValidator<CancelEnrollmentCommand>
+    public sealed class AddStudentCommandValidator : AbstractValidator<AddStudentCommand>
     {
-        public CancelEnrollmentCommandValidation()
+        public AddStudentCommandValidator()
         {
-            RuleFor(c => c.StudentId)
+            RuleFor(c => c.UserId)
                 .NotEmpty()
-                .WithMessage("Student ID is required.");
+                .WithMessage("User ID is required.");
 
-            RuleFor(c => c.EnrollmentId)
+            RuleFor(c => c.Name)
                 .NotEmpty()
-                .WithMessage("Enrollment ID is required.");
+                .WithMessage("Student name is required.");
         }
     }
 }

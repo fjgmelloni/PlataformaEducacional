@@ -6,11 +6,11 @@ using PlataformaEducacional.StudentAdministration.Application.Features.Students.
 using PlataformaEducacional.StudentAdministration.Application.Features.Students.Commands.GenerateCertificate;
 using PlataformaEducacional.StudentAdministration.Application.Features.Students.Events;
 
-namespace PlataformaEducacional.StudentAdministration.Application.Features.Students.Events
+namespace PlataformaEducacional.StudentAdministration.Application.Events
 {
-    public class EnrollmentEventHandler :
+    public sealed class EnrollmentEventHandler :
         INotificationHandler<EnrollmentPaymentCompletedEvent>,
-        INotificationHandler<EnrollmentPaymentDeclinedEvent>,
+    INotificationHandler<EnrollmentPaymentRejectedEvent>, 
         INotificationHandler<CourseCompletedEvent>
     {
         private readonly IMediatorHandler _mediatorHandler;
@@ -22,17 +22,23 @@ namespace PlataformaEducacional.StudentAdministration.Application.Features.Stude
 
         public async Task Handle(EnrollmentPaymentCompletedEvent message, CancellationToken cancellationToken)
         {
-            await _mediatorHandler.SendCommand(new CompleteEnrollmentCommand(message.EnrollmentId, message.StudentId));
+            await _mediatorHandler.SendCommandAsync(
+                new CompleteEnrollmentCommand(message.EnrollmentId, message.StudentId)
+            );
         }
 
-        public async Task Handle(EnrollmentPaymentDeclinedEvent message, CancellationToken cancellationToken)
+        public async Task Handle(EnrollmentPaymentRejectedEvent message, CancellationToken cancellationToken)
         {
-            await _mediatorHandler.SendCommand(new CancelEnrollmentCommand(message.EnrollmentId, message.StudentId));
+            await _mediatorHandler.SendCommandAsync(
+                new CancelEnrollmentCommand(message.EnrollmentId, message.StudentId)
+            );
         }
 
         public async Task Handle(CourseCompletedEvent message, CancellationToken cancellationToken)
         {
-            await _mediatorHandler.SendCommand(new GenerateCertificateCommand(message.EnrollmentId));
+            await _mediatorHandler.SendCommandAsync(
+                new GenerateCertificateCommand(message.EnrollmentId)
+            );
         }
     }
 }

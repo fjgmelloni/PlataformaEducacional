@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PlataformaEducacional.Core.Communication.Mediator;
 using PlataformaEducacional.Core.Data;
-using PlataformaEducacional.Core.Messages;
+using PlataformaEducacional.Core.Messages.Base;
 using PlataformaEducacional.StudentAdministration.Domain;
 using System.Collections.Generic;
 using System.Reflection.Emit;
@@ -25,7 +25,6 @@ namespace PlataformaEducacional.StudentAdministration.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // All string columns use varchar(255)
             foreach (var property in modelBuilder.Model
                 .GetEntityTypes()
                 .SelectMany(e => e.GetProperties().Where(p => p.ClrType == typeof(string))))
@@ -33,10 +32,8 @@ namespace PlataformaEducacional.StudentAdministration.Data
                 property.SetColumnType("varchar(255)");
             }
 
-            // Apply all mapping configurations in this assembly
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(StudentAdministrationContext).Assembly);
 
-            // Ignore Event class from Core
             modelBuilder.Ignore<Event>();
 
             // Set DeleteBehavior = ClientCascade for all foreign keys

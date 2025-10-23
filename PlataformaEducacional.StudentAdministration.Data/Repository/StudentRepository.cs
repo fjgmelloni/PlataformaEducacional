@@ -86,6 +86,16 @@ namespace PlataformaEducacional.StudentAdministration.Data.Repositories
                 .FirstOrDefaultAsync(e => e.Id == enrollmentId, cancellationToken);
         }
 
+        public async Task<Enrollment?> GetEnrollmentWithStudentAndCertificateById(Guid enrollmentId, CancellationToken cancellationToken)
+        {
+            return await _context.Enrollments
+                .Include(e => e.Student)
+                .Include(e => e.Certificate)
+                .Include(e => e.LearningHistory)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == enrollmentId, cancellationToken);
+        }
+
         public async Task<Enrollment?> GetEnrollmentWithCertificateById(Guid enrollmentId, CancellationToken cancellationToken)
         {
             return await _context.Enrollments

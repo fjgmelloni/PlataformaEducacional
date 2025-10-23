@@ -40,7 +40,8 @@ namespace PlataformaEducacional.StudentAdministration.Application.Features.Stude
                 enrollment.EnrollmentDate,
                 enrollment.LearningHistory.CourseStatus,
                 enrollment.LearningHistory.CompletionDate,
-                enrollment.LearningHistory.CourseProgress
+                enrollment.LearningHistory.OverallProgress
+
             );
     }
 }

@@ -1,9 +1,10 @@
 ﻿using FluentValidation;
-using PlataformaEducacional.Core.Messages;
+using PlataformaEducacional.Core.Messages.Base;
+using PlataformaEducacional.StudentAdministration.Application.Features.Students.Commands.CompleteCourse;
 
 namespace PlataformaEducacional.StudentAdministration.Application.Features.Students.Commands.CompleteEnrollment
 {
-    public class CompleteEnrollmentCommand : Command
+    public sealed class CompleteEnrollmentCommand : Command
     {
         public CompleteEnrollmentCommand(Guid enrollmentId, Guid studentId)
         {
@@ -11,27 +12,33 @@ namespace PlataformaEducacional.StudentAdministration.Application.Features.Stude
             StudentId = studentId;
         }
 
-        public Guid EnrollmentId { get; private set; }
-        public Guid StudentId { get; private set; }
+        public Guid EnrollmentId { get; }
+        public Guid StudentId { get; }
 
         public override bool IsValid()
         {
-            ValidationResult = new CompleteEnrollmentCommandValidation().Validate(this);
+            var result = new CompleteEnrollmentCommandValidator().Validate(this);
+            ValidationResult.Errors.Clear();
+            if (!result.IsValid)
+            {
+                foreach (var error in result.Errors)
+                    ValidationResult.AddError(error.ErrorMessage);
+            }
             return ValidationResult.IsValid;
         }
     }
 
-    public class CompleteEnrollmentCommandValidation : AbstractValidator<CompleteEnrollmentCommand>
+    public sealed class CompleteEnrollmentCommandValidator : AbstractValidator<CompleteEnrollmentCommand>
     {
-        public CompleteEnrollmentCommandValidation()
+        public CompleteEnrollmentCommandValidator()
         {
             RuleFor(c => c.StudentId)
                 .NotEmpty()
-                .WithMessage("Student ID is required.");
+                .WithMessage("O ID do aluno é obrigatório.");
 
             RuleFor(c => c.EnrollmentId)
                 .NotEmpty()
-                .WithMessage("Enrollment ID is required.");
+                .WithMessage("O ID da matrícula é obrigatório.");
         }
     }
 }
