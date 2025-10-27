@@ -1,10 +1,11 @@
-﻿using PlataformaEducacional.Core.DomainObjects;
-using PlataformaEducacional.Extensions;
+﻿using PlataformaEducacional.Core.Domain;
+using PlataformaEducacional.Core.Domain;
+
 using System.Security.Claims;
 
 namespace PlataformaEducacional.Api.Extensions
 {
-    public class AppIdentityUser : IAppIdentityUser
+    public class AppIdentityUser : ICurrentUser
     {
         private readonly IHttpContextAccessor _accessor;
 
