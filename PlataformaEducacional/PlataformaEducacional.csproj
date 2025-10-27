@@ -9,12 +9,28 @@
   <ItemGroup>
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.20" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.20" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.20" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.20">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Filters\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PlataformaEducacional.ContentManagement.Application\PlataformaEducacional.ContentManagement.Application.csproj" />
+    <ProjectReference Include="..\PlataformaEducacional.ContentManagement.Data\PlataformaEducacional.ContentManagement.Data.csproj" />
+    <ProjectReference Include="..\PlataformaEducacional.Core\PlataformaEducacional.Core.csproj" />
+    <ProjectReference Include="..\PlataformaEducacional.FinancialManagement.Core\PlataformaEducacional.FinancialManagement.Core.csproj" />
+    <ProjectReference Include="..\PlataformaEducacional.FinancialManagement.Data\PlataformaEducacional.FinancialManagement.Data.csproj" />
+    <ProjectReference Include="..\PlataformaEducacional.FinancialManagement.Integration\PlataformaEducacional.FinancialManagement.Integration.csproj" />
+    <ProjectReference Include="..\PlataformaEducacional.StudentAdministration.Application\PlataformaEducacional.StudentAdministration.Application.csproj" />
+    <ProjectReference Include="..\PlataformaEducacional.StudentAdministration.Data\PlataformaEducacional.StudentAdministration.Data.csproj" />
   </ItemGroup>
 
 </Project>

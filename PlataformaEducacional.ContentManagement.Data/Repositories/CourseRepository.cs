@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PlataformaEducacao.ContentManagement.Data.Context;
+using PlataformaEducacional.ContentManagement.Data.Context;
 using PlataformaEducacional.ContentManagement.Domain.Courses;
 using PlataformaEducacional.ContentManagement.Domain.Lessons;
 using PlataformaEducacional.Core.Data;
 
-namespace PlataformaEducacao.ContentManagement.Data.Repositories
+namespace PlataformaEducacional.ContentManagement.Data.Repositories
 {
     public sealed class CourseRepository : ICourseRepository, IDisposable
     {

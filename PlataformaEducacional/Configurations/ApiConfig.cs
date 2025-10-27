@@ -1,66 +1,35 @@
-﻿using Microsoft.AspNetCore.HttpOverrides;
-using PlataformaEducacao.Api.Filters;
-using System.Text.Json.Serialization;
-
-namespace PlataformaEducacional.Configurations
+﻿namespace PlataformaEducacional.Configurations
 {
-    public static class ApiConfig
+    public static class CorsConfiguration
     {
-        public static IHostBuilder ConfigureAppSettings(this IHostBuilder host)
+        public static IServiceCollection AddCorsConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
-            host.ConfigureAppConfiguration((ctx, builder) =>
+            services.AddCors(cors =>
             {
-                var enviroment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-                builder.SetBasePath(Directory.GetCurrentDirectory());                
-                builder.AddJsonFile("appsettings.json", true, true);
-                builder.AddJsonFile($"appsettings.{enviroment}.json", true, true);
+                var origins = configuration.GetSection("CorsOrigins")
+                    .GetChildren()
+                    .ToArray()
+                    .Select(c => c.Value)
+                    .ToArray();
 
-                builder.AddEnvironmentVariables();
-            });
+                // Mensagem de iteração mantida em português
+                Console.WriteLine("Iniciando CORS {0}", origins?.Aggregate((a, p) => $"{a}, {p}"));
 
-            return host;
-        }
-
-        public static IServiceCollection AddApiConfig(this IServiceCollection services)
-        {
-            services.AddControllers(options
-                => options.Filters.Add(typeof(ApiGlobalExceptionFilter)))
-                .ConfigureApiBehaviorOptions(opt => opt.SuppressModelStateInvalidFilter = true)
-                .AddJsonOptions(option =>
+                cors.AddPolicy("CorsPolicy", policy =>
                 {
-                    option.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-                    option.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    policy
+                        .WithHeaders("Origin", "X-Requested-With", "x-xsrf-token", "Content-Type", "Accept", "Authorization")
+                        .WithOrigins(origins!)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials()
+                        .SetIsOriginAllowedToAllowWildcardSubdomains()
+                        .SetPreflightMaxAge(TimeSpan.FromDays(10))
+                        .Build();
                 });
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
 
             return services;
-        }
-
-        public static IApplicationBuilder UseApiConfiguration(this IApplicationBuilder app, IWebHostEnvironment environment)
-        {
-            app.UseForwardedHeaders();
-            if (environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseCors("CorsPolicy");
-
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseIdentityConfiguration();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-
-            return app;
         }
     }
 }

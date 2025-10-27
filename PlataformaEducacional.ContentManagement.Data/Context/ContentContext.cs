@@ -4,7 +4,7 @@ using PlataformaEducacional.ContentManagement.Domain.Lessons;
 using PlataformaEducacional.Core.Data;
 using PlataformaEducacional.Core.Messages.Base;
 
-namespace PlataformaEducacao.ContentManagement.Data.Context
+namespace PlataformaEducacional.ContentManagement.Data.Context
 {
     public class ContentContext : DbContext, IUnitOfWork
     {

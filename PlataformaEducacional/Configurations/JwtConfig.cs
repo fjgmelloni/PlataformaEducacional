@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using PlataformaEducacao.Api.Extensions;
+using PlataformaEducacional.Api.Extensions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 namespace PlataformaEducacional.Configurations
 {
-    public static class JwtConfig
+    public static class JwtConfiguration
     {
-        public static IServiceCollection AddJwtConfig(this IServiceCollection services,
-            IConfiguration configuration)
+        public static IServiceCollection AddJwtConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtSettingsSection = configuration.GetSection("JwtSettings");
             services.Configure<JwtSettings>(jwtSettingsSection);
@@ -21,7 +20,8 @@ namespace PlataformaEducacional.Configurations
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
+            })
+            .AddJwtBearer(options =>
             {
                 options.RequireHttpsMetadata = true;
                 options.SaveToken = true;

@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using PlataformaEducacao.Api.Data;
-using PlataformaEducacao.GestaoAluno.Data;
-using PlataformaEducacao.GestaoAluno.Domain;
-using PlataformaEducacao.GestaoConteudo.Data;
-using PlataformaEducacao.GestaoConteudo.Domain;
-using PlataformaEducacao.GestaoConteudo.Domain.ValueObjects;
-using PlataformaEducacao.GestaoFinanceira.Business;
-using PlataformaEducacao.GestaoFinanceira.Data;
+using PlataformaEducacional.Api.Data;
+using PlataformaEducacional.GestaoAluno.Data;
+using PlataformaEducacional.GestaoAluno.Domain;
+using PlataformaEducacional.GestaoConteudo.Data;
+using PlataformaEducacional.GestaoConteudo.Domain;
+using PlataformaEducacional.GestaoConteudo.Domain.ValueObjects;
+using PlataformaEducacional.GestaoFinanceira.Business;
+using PlataformaEducacional.GestaoFinanceira.Data;
 
 namespace PlataformaEducacional.Configurations
 {
