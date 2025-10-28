@@ -1,15 +1,36 @@
+using PlataformaEducacional.Api.Configurations;
+using PlataformaEducacional.Configurations;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
-builder.Services.AddControllers();
+builder.Host.ConfigureAppSettings();
+
+builder.Services
+    .AddApiConfig()
+    .AddCorsConfig(builder.Configuration)
+    .AddSwaggerConfiguration()
+    .AddDbContextConfiguration(builder.Configuration)
+    .AddIdentityConfiguration()
+    .RegisterServices()
+    .AddJwtConfiguration(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseSwaggerConfiguration();
 
+app.UseApiConfiguration(app.Environment);
+
+app.UseCors("CorsPolicy");
+
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllers();
 
+app.UseDbMigrationHelper();
+
 app.Run();
+
+public partial class Program { }

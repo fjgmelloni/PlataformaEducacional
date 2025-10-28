@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PlataformaEducacional.Api.Requests.Enrollment;
 using PlataformaEducacional.Core.Communication.Mediator;
-using PlataformaEducacional.Core.DomainObjects;
 using PlataformaEducacional.Core.Messages.CommonMessages.Notifications;
-using PlataformaEducacional.StudentAdministration.Application.Commands.EnrollInCourse;
-using PlataformaEducacional.StudentAdministration.Application.Queries;
-using PlataformaEducacional.StudentAdministration.Application.Queries.ViewModels;
-using PlataformaEducacional.ContentManagement.Application.Queries;
+using PlataformaEducacional.StudentAdministration.Application.Features.Students.Commands.EnrollInCourse;
+using PlataformaEducacional.StudentAdministration.Application.Features.Students.Queries;
+using PlataformaEducacional.StudentAdministration.Application.Features.Students.Queries.ViewModels;
 using System.Net;
+using PlataformaEducacional.ContentManagement.Application.Features.Courses.Queries;
+using PlataformaEducacional.StudentAdministration.Application.Features.Students.Queries;
+using PlataformaEducacional.Core.Domain;
+using PlataformaEducacional.StudentAdministration.Application.Features.Students.Queries.ViewModels;
 
 namespace PlataformaEducacional.Api.Controllers
 {
@@ -19,12 +21,12 @@ namespace PlataformaEducacional.Api.Controllers
         private readonly ICourseQueries _courseQueries;
         private readonly IStudentQueries _studentQueries;
         private readonly IMediatorHandler _mediatorHandler;
-        private readonly IAppIdentityUser _identityUser;
+        private readonly ICurrentUser _identityUser;
 
         public StudentsController(
             INotificationHandler<DomainNotification> notifications,
             IMediatorHandler mediatorHandler,
-            IAppIdentityUser identityUser,
+            ICurrentUser identityUser,
             ICourseQueries courseQueries,
             IStudentQueries studentQueries
         ) : base(notifications, mediatorHandler, identityUser)
@@ -58,20 +60,20 @@ namespace PlataformaEducacional.Api.Controllers
             if (!ModelState.IsValid)
                 return CustomResponse(ModelState);
 
-            var course = await _courseQueries.GetCourseWithLessonsById(request.CourseId, cancellationToken);
+            var course = await _courseQueries.GetWithLessonsByIdAsync(request.CourseId, cancellationToken);
             if (course is null)
             {
                 NotifyError("Student", "Curso não encontrado.");
                 return CustomResponse();
             }
 
-            if (!course.Available)
+            if (!course.IsAvailable)
             {
                 NotifyError("Student", "Curso não disponível para matrícula.");
                 return CustomResponse();
             }
 
-            var command = new EnrollStudentInCourseCommand(
+            var command = new EnrollInCourseCommand(
                 course.Id,
                 Guid.Parse(_identityUser.GetUserId()),
                 course.Name,
@@ -79,8 +81,9 @@ namespace PlataformaEducacional.Api.Controllers
                 course.Price
             );
 
-            await _mediatorHandler.SendCommand(command);
+            await _mediatorHandler.SendCommandAsync(command);
             return CustomResponse(HttpStatusCode.Created);
         }
+
     }
 }

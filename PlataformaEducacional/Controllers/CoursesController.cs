@@ -1,16 +1,17 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PlataformaEducacional.Api.Requests.Course;
+using PlataformaEducacional.ContentManagement.Application.Features.Courses.Commands.AddCourse;
+using PlataformaEducacional.ContentManagement.Application.Features.Courses.Commands.AddLesson;
+using PlataformaEducacional.ContentManagement.Application.Features.Courses.Commands.UpdateCourse;
+using PlataformaEducacional.ContentManagement.Application.Features.Courses.Queries;
+using PlataformaEducacional.ContentManagement.Application.Features.Courses.Queries.ViewModels;
 using PlataformaEducacional.Core.Communication.Mediator;
-using PlataformaEducacional.Core.DomainObjects;
+using PlataformaEducacional.Core.Domain;
 using PlataformaEducacional.Core.Messages.CommonMessages.Notifications;
-using PlataformaEducacional.StudentAdministration.Application.Queries;
-using PlataformaEducacional.StudentAdministration.Application.Queries.ViewModels;
-using PlataformaEducacional.ContentManagement.Application.Commands;
-using PlataformaEducacional.ContentManagement.Application.Queries;
-using PlataformaEducacional.ContentManagement.Application.Queries.ViewModels;
+using PlataformaEducacional.StudentAdministration.Application.Features.Students.Queries;
+using PlataformaEducacional.StudentAdministration.Application.Features.Students.Queries.ViewModels;
 using System.Net;
 
 namespace PlataformaEducacional.Api.Controllers
@@ -25,7 +26,7 @@ namespace PlataformaEducacional.Api.Controllers
         public CoursesController(
             INotificationHandler<DomainNotification> notifications,
             IMediatorHandler mediatorHandler,
-            IAppIdentityUser identityUser,
+            ICurrentUser identityUser,
             ICourseQueries courseQueries,
             IStudentQueries studentQueries
         ) : base(notifications, mediatorHandler, identityUser)
@@ -39,23 +40,23 @@ namespace PlataformaEducacional.Api.Controllers
         [HttpGet("available-courses")]
         public async Task<ActionResult<IEnumerable<CourseViewModel>>> GetAvailableCourses(CancellationToken cancellationToken)
         {
-            var courses = await _courseQueries.GetAvailableWithLessons(cancellationToken);
+            var courses = await _courseQueries.GetAvailableWithLessonsAsync(cancellationToken);
             return CustomResponse(HttpStatusCode.OK, courses);
         }
 
-        [HttpGet("{courseId:guid}")]
-        [AllowAnonymous]
-        public async Task<ActionResult<CourseViewModel>> GetCourseDetails(Guid courseId, CancellationToken cancellationToken)
-        {
-            var course = await _courseQueries.GetCourseWithLessonsById(courseId, cancellationToken);
-            return CustomResponse(HttpStatusCode.OK, course);
-        }
+   [HttpGet("{courseId:guid}")]
+[AllowAnonymous]
+public async Task<ActionResult<CourseViewModel>> GetCourseDetails(Guid courseId, CancellationToken cancellationToken)
+{
+    var course = await _courseQueries.GetWithLessonsByIdAsync(courseId, cancellationToken);
+    return CustomResponse(HttpStatusCode.OK, course);
+}
 
         [HttpGet("all-courses")]
         [Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<IEnumerable<CourseViewModel>>> GetAllCourses(CancellationToken cancellationToken)
         {
-            var courses = await _courseQueries.GetAll(cancellationToken);
+            var courses = await _courseQueries.GetAllAsync(cancellationToken);
             return CustomResponse(HttpStatusCode.OK, courses);
         }
 
@@ -74,7 +75,7 @@ namespace PlataformaEducacional.Api.Controllers
                 request.Available
             );
 
-            await _mediatorHandler.SendCommand(command);
+            await _mediatorHandler.SendCommandAsync(command);
             return CustomResponse(HttpStatusCode.Created);
         }
 
@@ -97,7 +98,7 @@ namespace PlataformaEducacional.Api.Controllers
                 request.Available
             );
 
-            await _mediatorHandler.SendCommand(command);
+            await _mediatorHandler.SendCommandAsync(command);
             return CustomResponse();
         }
 
@@ -116,7 +117,7 @@ namespace PlataformaEducacional.Api.Controllers
                 request.CourseId
             );
 
-            await _mediatorHandler.SendCommand(command);
+            await _mediatorHandler.SendCommandAsync(command);
             return CustomResponse(HttpStatusCode.Created);
         }
 
@@ -124,7 +125,7 @@ namespace PlataformaEducacional.Api.Controllers
         [Authorize(Roles = "ADMIN")]
         public async Task<ActionResult<IEnumerable<EnrollmentViewModel>>> GetActiveStudentsByCourse(Guid courseId, CancellationToken cancellationToken)
         {
-            var students = await _studentQueries.GetActiveStudentsByCourseId(courseId, cancellationToken);
+            var students = await _studentQueries.GetEnrolledStudentsByCourseId(courseId, cancellationToken);
             return CustomResponse(HttpStatusCode.OK, students);
         }
 

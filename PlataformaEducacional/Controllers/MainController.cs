@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using PlataformaEducacional.Core.Communication.Mediator;
-using PlataformaEducacional.Core.DomainObjects;
+using PlataformaEducacional.Core.Domain;
 using PlataformaEducacional.Core.Messages.CommonMessages.Notifications;
 using System.Net;
 
@@ -14,12 +14,12 @@ namespace PlataformaEducacional.Api.Controllers
     {
         private readonly DomainNotificationHandler _notifications;
         private readonly IMediatorHandler _mediatorHandler;
-        private readonly IAppIdentityUser _identityUser;
+        private readonly ICurrentUser _identityUser;
 
         protected MainController(
             INotificationHandler<DomainNotification> notifications,
             IMediatorHandler mediatorHandler,
-            IAppIdentityUser identityUser)
+            ICurrentUser identityUser)
         {
             _notifications = (DomainNotificationHandler)notifications;
             _mediatorHandler = mediatorHandler;
@@ -68,7 +68,7 @@ namespace PlataformaEducacional.Api.Controllers
 
         protected void NotifyError(string code, string message)
         {
-            _mediatorHandler.PublishNotification(new DomainNotification(code, message));
+            _mediatorHandler.PublishNotificationAsync(new DomainNotification(code, message));
         }
     }
 }

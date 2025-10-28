@@ -1,35 +1,41 @@
-﻿namespace PlataformaEducacional.Configurations
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+namespace PlataformaEducacional.Configurations
 {
-    public static class CorsConfiguration
+    public static class ApiConfig
     {
-        public static IServiceCollection AddCorsConfiguration(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddApiConfig(this IServiceCollection services)
         {
-            services.AddCors(cors =>
+            services.AddControllers();
+            services.AddEndpointsApiExplorer();
+            return services;
+        }
+
+        public static IApplicationBuilder UseApiConfiguration(this IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+                app.UseDeveloperExceptionPage();
+
+            app.UseHttpsRedirection();
+            app.UseRouting();
+
+            return app;
+        }
+
+        public static ConfigureHostBuilder ConfigureAppSettings(this ConfigureHostBuilder hostBuilder)
+        {
+            hostBuilder.ConfigureAppConfiguration((context, config) =>
             {
-                var origins = configuration.GetSection("CorsOrigins")
-                    .GetChildren()
-                    .ToArray()
-                    .Select(c => c.Value)
-                    .ToArray();
-
-                // Mensagem de iteração mantida em português
-                Console.WriteLine("Iniciando CORS {0}", origins?.Aggregate((a, p) => $"{a}, {p}"));
-
-                cors.AddPolicy("CorsPolicy", policy =>
-                {
-                    policy
-                        .WithHeaders("Origin", "X-Requested-With", "x-xsrf-token", "Content-Type", "Accept", "Authorization")
-                        .WithOrigins(origins!)
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials()
-                        .SetIsOriginAllowedToAllowWildcardSubdomains()
-                        .SetPreflightMaxAge(TimeSpan.FromDays(10))
-                        .Build();
-                });
+                var env = context.HostingEnvironment;
+                config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                      .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                      .AddEnvironmentVariables();
             });
 
-            return services;
+            return hostBuilder;
         }
     }
 }

@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PlataformaEducacional.Api.Data;
-using PlataformaEducacional.GestaoAluno.Data;
-using PlataformaEducacional.GestaoAluno.Domain;
-using PlataformaEducacional.GestaoConteudo.Data;
-using PlataformaEducacional.GestaoConteudo.Domain;
-using PlataformaEducacional.GestaoConteudo.Domain.ValueObjects;
-using PlataformaEducacional.GestaoFinanceira.Business;
-using PlataformaEducacional.GestaoFinanceira.Data;
+using PlataformaEducacional.ContentManagement.Data.Context;
+using PlataformaEducacional.ContentManagement.Domain.Courses;
+using PlataformaEducacional.ContentManagement.Domain.Lessons;
+using PlataformaEducacional.ContentManagement.Domain.ValueObjects;
+using PlataformaEducacional.FinancialManagement.Core;
+using PlataformaEducacional.FinancialManagement.Data;
+using PlataformaEducacional.StudentAdministration.Data;
+using PlataformaEducacional.StudentAdministration.Domain;
 
 namespace PlataformaEducacional.Configurations
 {
@@ -18,6 +19,7 @@ namespace PlataformaEducacional.Configurations
             DbMigrationHelper.EnsureSeedData(app).Wait();
         }
     }
+
     public static class DbMigrationHelper
     {
         public static async Task EnsureSeedData(WebApplication application)
@@ -25,30 +27,31 @@ namespace PlataformaEducacional.Configurations
             var service = application.Services.CreateScope().ServiceProvider;
             await EnsureSeedData(service);
         }
+
         public static async Task EnsureSeedData(IServiceProvider serviceProvider)
         {
             using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
             var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
 
             var identityContext = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
-            var conteudoContext = scope.ServiceProvider.GetRequiredService<GestaoConteudoContext>();
-            var alunoContext = scope.ServiceProvider.GetRequiredService<GestaoAlunoContext>();
-            var pagamentoContext = scope.ServiceProvider.GetRequiredService<PagamentoContext>();
+            var contentContext = scope.ServiceProvider.GetRequiredService<ContentContext>();
+            var studentContext = scope.ServiceProvider.GetRequiredService<StudentAdministrationContext>();
+            var paymentContext = scope.ServiceProvider.GetRequiredService<PaymentContext>();
 
             if (env.EnvironmentName == "Development" || env.EnvironmentName == "Testing")
             {
                 await identityContext.Database.MigrateAsync();
-                await conteudoContext.Database.MigrateAsync();
-                await alunoContext.Database.MigrateAsync();
-                await pagamentoContext.Database.MigrateAsync();
+                await contentContext.Database.MigrateAsync();
+                await studentContext.Database.MigrateAsync();
+                await paymentContext.Database.MigrateAsync();
 
-                await SeedUserAndRoles(identityContext);
-                await SeedTablesGestaoConteudo(conteudoContext);
-                await SeedTablesGestaoAluno(identityContext, conteudoContext, alunoContext, pagamentoContext);
+                await SeedUsersAndRoles(identityContext);
+                await SeedContentTables(contentContext);
+                await SeedStudentTables(identityContext, contentContext, studentContext, paymentContext);
             }
         }
 
-        private static async Task SeedUserAndRoles(ApplicationContext contextIdentity)
+        private static async Task SeedUsersAndRoles(ApplicationContext contextIdentity)
         {
             if (contextIdentity.Users.Any()) return;
 
@@ -57,150 +60,147 @@ namespace PlataformaEducacional.Configurations
                 Name = "ADMIN",
                 NormalizedName = "ADMIN"
             };
-            var roleAluno = new IdentityRole
+
+            var roleStudent = new IdentityRole
             {
-                Name = "ALUNO",
-                NormalizedName = "ALUNO"
+                Name = "STUDENT",
+                NormalizedName = "STUDENT"
             };
 
             await contextIdentity.Roles.AddAsync(roleAdmin);
-            await contextIdentity.Roles.AddAsync(roleAluno);
+            await contextIdentity.Roles.AddAsync(roleStudent);
 
-            var idAdmin = Guid.NewGuid();
-            var usuarioAdmin = new IdentityUser
+            var adminId = Guid.NewGuid();
+            var adminUser = new IdentityUser
             {
-                Id = idAdmin.ToString(),
-                Email = "admin@teste.com",
+                Id = adminId.ToString(),
+                Email = "admin@test.com",
                 EmailConfirmed = true,
-                NormalizedEmail = "ADMIN@TESTE.COM",
-                UserName = "admin@teste.com",
+                NormalizedEmail = "ADMIN@TEST.COM",
+                UserName = "admin@test.com",
                 AccessFailedCount = 0,
                 PasswordHash = "AQAAAAIAAYagAAAAEF/nmfwFGPa8pnY9AvZL8HKI7r7l+aM4nryRB+Y3Ktgo6d5/0d25U2mhixnO4h/K5w==",
-                NormalizedUserName = "ADMIN@TESTE.COM"
+                NormalizedUserName = "ADMIN@TEST.COM"
             };
-            await contextIdentity.Users.AddAsync(usuarioAdmin);
+            await contextIdentity.Users.AddAsync(adminUser);
 
             await contextIdentity.UserRoles.AddAsync(new IdentityUserRole<string>
             {
                 RoleId = roleAdmin.Id,
-                UserId = usuarioAdmin.Id
+                UserId = adminUser.Id
             });
 
-            var idAluno = Guid.NewGuid();
-            var usuarioAluno = new IdentityUser
+            var studentId = Guid.NewGuid();
+            var studentUser = new IdentityUser
             {
-                Id = idAluno.ToString(),
-                Email = "aluno@teste.com",
+                Id = studentId.ToString(),
+                Email = "student@test.com",
                 EmailConfirmed = true,
-                NormalizedEmail = "ALUNO@TESTE.COM",
-                UserName = "aluno@teste.com",
+                NormalizedEmail = "STUDENT@TEST.COM",
+                UserName = "student@test.com",
                 AccessFailedCount = 0,
                 PasswordHash = "AQAAAAIAAYagAAAAEF/nmfwFGPa8pnY9AvZL8HKI7r7l+aM4nryRB+Y3Ktgo6d5/0d25U2mhixnO4h/K5w==",
-                NormalizedUserName = "ALUNO@TESTE.COM"
+                NormalizedUserName = "STUDENT@TEST.COM"
             };
-            await contextIdentity.Users.AddAsync(usuarioAluno);
+            await contextIdentity.Users.AddAsync(studentUser);
+
             await contextIdentity.UserRoles.AddAsync(new IdentityUserRole<string>
             {
-                RoleId = roleAluno.Id,
-                UserId = usuarioAluno.Id
+                RoleId = roleStudent.Id,
+                UserId = studentUser.Id
             });
 
             await contextIdentity.SaveChangesAsync();
         }
 
-        private static async Task SeedTablesGestaoConteudo(GestaoConteudoContext conteudoContext)
+        private static async Task SeedContentTables(ContentContext contentContext)
         {
-            if (!conteudoContext.Cursos.Any())
+            if (!contentContext.Courses.Any())
             {
-                var curso = new Curso(".NET", new ConteudoProgramatico("Conteudo do Curso", 30), 500, true);
+                var course = new Course(".NET", new Syllabus("Course Content", 30), 500, true);
                 for (int i = 1; i <= 5; i++)
                 {
-                    var aula = new Aula($"Aula {i}", $"Conteudo da Aula {i}", i, $"Segue link dos materiais da aula {i}");
-                    curso.AdicionarAula(aula);
+                    var lesson = new Lesson($"Lesson {i}", $"Lesson {i} content", i, $"Material link for lesson {i}");
+                    course.AddLesson(lesson);
                 }
-                await conteudoContext.Cursos.AddAsync(curso);
+                await contentContext.Courses.AddAsync(course);
 
-                curso = new Curso(".NET Core", new ConteudoProgramatico("Conteudo do Curso de .NET Core", 30), 500, true);
-                for (int i = 1; i <= 1; i++)
-                {
-                    var aula = new Aula($"Aula {i}", $"Conteudo da Aula {i}", i, $"Segue link dos materiais da aula {i}");
-                    curso.AdicionarAula(aula);
-                }
-                await conteudoContext.Cursos.AddAsync(curso);
+                course = new Course(".NET Core", new Syllabus("Content of .NET Core Course", 30), 500, true);
+                var lessonCore = new Lesson("Lesson 1", "Lesson 1 content", 1, "Material link for lesson 1");
+                course.AddLesson(lessonCore);
+                await contentContext.Courses.AddAsync(course);
 
-                curso = new Curso("Dominios Ricos", new ConteudoProgramatico("Conteudo do Curso de Dominios Ricos", 30), 500, true);
-                for (int i = 1; i <= 1; i++)
-                {
-                    var aula = new Aula($"Aula {i}", $"Conteudo da Aula {i}", i, $"Segue link dos materiais da aula {i}");
-                    curso.AdicionarAula(aula);
-                }
-                await conteudoContext.Cursos.AddAsync(curso);
+                course = new Course("Rich Domains", new Syllabus("Content of Rich Domains Course", 30), 500, true);
+                var lessonRich = new Lesson("Lesson 1", "Lesson 1 content", 1, "Material link for lesson 1");
+                course.AddLesson(lessonRich);
+                await contentContext.Courses.AddAsync(course);
 
-                await conteudoContext.SaveChangesAsync();
+                await contentContext.SaveChangesAsync();
             }
         }
 
-        private static async Task SeedTablesGestaoAluno(ApplicationContext contextIdentity, GestaoConteudoContext conteudoContext, GestaoAlunoContext alunoContext, PagamentoContext pagamentoContext)
+        private static async Task SeedStudentTables(
+            ApplicationContext contextIdentity,
+            ContentContext contentContext,
+            StudentAdministrationContext studentContext,
+            PaymentContext paymentContext)
         {
-            if (!alunoContext.Matriculas.Any())
+            if (!studentContext.Enrollments.Any())
             {
-                var userAluno = await contextIdentity.Users.FirstOrDefaultAsync(x => x.Email == "aluno@teste.com");
-                var curso = await conteudoContext.Cursos.Include(c => c.Aulas).FirstOrDefaultAsync(c => c.Nome == ".NET");
-                var cursoCore = await conteudoContext.Cursos.Include(c => c.Aulas).FirstOrDefaultAsync(c => c.Nome == ".NET Core");
-                var cursoDominiosRicos = await conteudoContext.Cursos.Include(c => c.Aulas).FirstOrDefaultAsync(c => c.Nome == "Dominios Ricos");
+                var userStudent = await contextIdentity.Users.FirstOrDefaultAsync(x => x.Email == "student@test.com");
+                var course = await contentContext.Courses.Include(c => c.Lessons).FirstOrDefaultAsync(c => c.Name == ".NET");
+                var courseCore = await contentContext.Courses.Include(c => c.Lessons).FirstOrDefaultAsync(c => c.Name == ".NET Core");
+                var courseRichDomains = await contentContext.Courses.Include(c => c.Lessons).FirstOrDefaultAsync(c => c.Name == "Rich Domains");
 
-                var aluno = new Aluno(Guid.Parse(userAluno!.Id), "Aluno ");
-                var matricula = new Matricula(curso!.Id, curso.Nome, curso.Aulas.Count, 500);
-                var matriculaCore = new Matricula(cursoCore!.Id, cursoCore.Nome, cursoCore.Aulas.Count, 500);
-                var matriculaDominiosRicos = new Matricula(cursoDominiosRicos!.Id, cursoDominiosRicos.Nome, cursoDominiosRicos.Aulas.Count, 500);
-                aluno.RealizarMatricula(matricula);
-                aluno.RealizarMatricula(matriculaCore);
-                aluno.RealizarMatricula(matriculaDominiosRicos);
+                var student = new Student(Guid.Parse(userStudent!.Id), "Student");
 
-                var pagamento = new Pagamento(matricula.Id, curso.Valor, new DadosCartao("RINALDO", "111222333444", "05/27", "123"));
-                var pagamentoCore = new Pagamento(matriculaCore.Id, cursoCore.Valor, new DadosCartao("RINALDO", "111222333444", "05/27", "123"));
-                var pagamentoDominiosRicos = new Pagamento(matriculaDominiosRicos.Id, cursoDominiosRicos.Valor, new DadosCartao("RINALDO", "111222333444", "05/27", "123"));
-                var transacao = new Transacao(pagamento.Id, pagamento.Valor);
-                var transacaoCore = new Transacao(pagamentoCore.Id, pagamentoCore.Valor);
-                var transacaoDominiosRicos = new Transacao(pagamentoDominiosRicos.Id, pagamentoDominiosRicos.Valor);
-                transacao.AlterarStatus(StatusTransacao.Pago);
-                transacaoCore.AlterarStatus(StatusTransacao.Pago);
-                transacaoDominiosRicos.AlterarStatus(StatusTransacao.Pago);
+                var enrollment = new Enrollment(course!.Id, course.Name, course.Lessons.Count, 500);
+                var enrollmentCore = new Enrollment(courseCore!.Id, courseCore.Name, courseCore.Lessons.Count, 500);
+                var enrollmentRich = new Enrollment(courseRichDomains!.Id, courseRichDomains.Name, courseRichDomains.Lessons.Count, 500);
 
-                matricula.Ativar();
-                matriculaCore.Ativar();
-                matriculaDominiosRicos.Ativar();
+                student.EnrollInCourse(enrollment);
+                student.EnrollInCourse(enrollmentCore);
+                student.EnrollInCourse(enrollmentRich);
 
-                foreach (var aula in curso.Aulas)
+                var payment = new Payment(enrollment.Id, course.Price, new CardData("RINALDO", "111222333444", "05/27", "123"));
+                var paymentCore = new Payment(enrollmentCore.Id, courseCore.Price, new CardData("RINALDO", "111222333444", "05/27", "123"));
+                var paymentRich = new Payment(enrollmentRich.Id, courseRichDomains.Price, new CardData("RINALDO", "111222333444", "05/27", "123"));
+
+                var transaction = new Transaction(payment.Id, payment.Amount);
+                var transactionCore = new Transaction(paymentCore.Id, paymentCore.Amount);
+                var transactionRich = new Transaction(paymentRich.Id, paymentRich.Amount);
+
+                transaction.ChangeStatus(TransactionStatus.Paid);
+                transactionCore.ChangeStatus(TransactionStatus.Paid);
+                transactionRich.ChangeStatus(TransactionStatus.Paid);
+
+                enrollment.Activate();
+                enrollmentCore.Activate();
+                enrollmentRich.Activate();
+
+                foreach (var lesson in course.Lessons)
                 {
-                    var progresso = new ProgressoAula(aula.Id);
-                    matricula.RegistrarAula(progresso);
+                    var progress = new LessonProgress(lesson.Id);
+                    enrollment.RecordLesson(progress);
                 }
-                matricula.FinalizarCurso();
+                enrollment.CompleteCourse();
 
-                foreach (var aula in cursoDominiosRicos.Aulas)
+                foreach (var lesson in courseRichDomains.Lessons)
                 {
-                    var progresso = new ProgressoAula(aula.Id);
-                    matriculaDominiosRicos.RegistrarAula(progresso);
+                    var progress = new LessonProgress(lesson.Id);
+                    enrollmentRich.RecordLesson(progress);
                 }
 
-                await alunoContext.Alunos.AddAsync(aluno);
+                await studentContext.Students.AddAsync(student);
+                var certificate = new Certificate(enrollment.Id);
+                await studentContext.Certificates.AddAsync(certificate);
 
-                var certificado = new Certificado(matricula.Id);
-                await alunoContext.Certificados.AddAsync(certificado);
+                await paymentContext.Payments.AddRangeAsync(payment, paymentCore, paymentRich);
+                await paymentContext.Transactions.AddRangeAsync(transaction, transactionCore, transactionRich);
 
-                await pagamentoContext.Pagamentos.AddAsync(pagamento);
-                await pagamentoContext.Transacoes.AddAsync(transacao);
-                await pagamentoContext.Pagamentos.AddAsync(pagamentoCore);
-                await pagamentoContext.Transacoes.AddAsync(transacaoCore);
-                await pagamentoContext.Pagamentos.AddAsync(pagamentoDominiosRicos);
-                await pagamentoContext.Transacoes.AddAsync(transacaoDominiosRicos);
-                await pagamentoContext.SaveChangesAsync();
-                await alunoContext.SaveChangesAsync();
+                await paymentContext.SaveChangesAsync();
+                await studentContext.SaveChangesAsync();
             }
-
-
-
         }
     }
 }

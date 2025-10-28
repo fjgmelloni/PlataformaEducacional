@@ -6,9 +6,9 @@ using Microsoft.IdentityModel.Tokens;
 using PlataformaEducacional.Api.Extensions;
 using PlataformaEducacional.Api.Requests.Authentication;
 using PlataformaEducacional.Core.Communication.Mediator;
-using PlataformaEducacional.Core.DomainObjects;
+using PlataformaEducacional.Core.Domain;
 using PlataformaEducacional.Core.Messages.CommonMessages.Notifications;
-using PlataformaEducacional.StudentAdministration.Application.Commands.AddStudent;
+using PlataformaEducacional.StudentAdministration.Application.Features.Students.Commands.AddStudent;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
@@ -28,7 +28,7 @@ namespace PlataformaEducacional.Api.Controllers
         public AuthenticationController(
             INotificationHandler<DomainNotification> notifications,
             IMediatorHandler mediatorHandler,
-            IAppIdentityUser identityUser,
+            ICurrentUser identityUser,
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
@@ -54,7 +54,7 @@ namespace PlataformaEducacional.Api.Controllers
                 return CustomResponse();
 
             var command = new AddStudentCommand(result, request.Name!);
-            await _mediatorHandler.SendCommand(command);
+            await _mediatorHandler.SendCommandAsync(command);
 
             if (!IsOperationValid())
                 return CustomResponse();
@@ -123,7 +123,7 @@ namespace PlataformaEducacional.Api.Controllers
                 Subject = new ClaimsIdentity(claims),
                 Issuer = _jwtSettings.Issuer,
                 Audience = _jwtSettings.Audience,
-                Expires = DateTime.UtcNow.AddHours(_jwtSettings.ExpiracaoHoras),
+                Expires = DateTime.UtcNow.AddHours(_jwtSettings.ExpirationHours),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             });
 

@@ -13,6 +13,17 @@ namespace PlataformaEducacional.ContentManagement.Data.Context
         public DbSet<Course> Courses { get; set; } = null!;
         public DbSet<Lesson> Lessons { get; set; } = null!;
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlite(
+                    "Data Source=PlataformaEducacionalDevelopment.db",
+                    x => x.MigrationsAssembly("PlataformaEducacional.ContentManagement.Data")
+                );
+            }
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             foreach (var property in modelBuilder.Model
