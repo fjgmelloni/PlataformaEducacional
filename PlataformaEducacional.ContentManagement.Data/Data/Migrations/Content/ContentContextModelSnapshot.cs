@@ -2,20 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PlataformaEducacional.ContentManagement.Data.Context;
 
 #nullable disable
 
-namespace PlataformaEducacional.ContentManagement.Data.Migrations
+namespace PlataformaEducacional.ContentManagement.Data.Data.Migrations.Content
 {
     [DbContext(typeof(ContentContext))]
-    [Migration("20251028200139_InitialContent")]
-    partial class InitialContent
+    partial class ContentContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.20");
@@ -50,16 +47,18 @@ namespace PlataformaEducacional.ContentManagement.Data.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("CourseId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Material")
+                        .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
                     b.Property<int>("Order")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("SortOrder");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -71,7 +70,7 @@ namespace PlataformaEducacional.ContentManagement.Data.Migrations
                     b.HasIndex("CourseId", "Title")
                         .HasDatabaseName("IX_Lesson_Course_Title");
 
-                    b.ToTable("Lesson", (string)null);
+                    b.ToTable("Lessons", (string)null);
                 });
 
             modelBuilder.Entity("PlataformaEducacional.ContentManagement.Domain.Courses.Course", b =>

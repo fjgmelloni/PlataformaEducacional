@@ -14,9 +14,9 @@ namespace PlataformaEducacional.Configurations
 {
     public static class DbMigrationHelperExtension
     {
-        public static void UseDbMigrationHelper(this WebApplication app)
+        public static async Task UseDbMigrationHelperAsync(this WebApplication app)
         {
-            DbMigrationHelper.EnsureSeedData(app).Wait();
+            await DbMigrationHelper.EnsureSeedData(app);
         }
     }
 

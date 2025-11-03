@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace PlataformaEducacional.ContentManagement.Data.Migrations
+namespace PlataformaEducacional.ContentManagement.Data.Data.Migrations.Content
 {
     /// <inheritdoc />
-    public partial class InitialContent : Migration
+    public partial class InitialContentClean : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -28,21 +28,21 @@ namespace PlataformaEducacional.ContentManagement.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Lesson",
+                name: "Lessons",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Title = table.Column<string>(type: "varchar(255)", maxLength: 200, nullable: false),
-                    Content = table.Column<string>(type: "varchar(max)", nullable: false),
-                    Order = table.Column<int>(type: "INTEGER", nullable: false),
-                    Material = table.Column<string>(type: "varchar(255)", nullable: true),
+                    Content = table.Column<string>(type: "TEXT", nullable: false),
+                    SortOrder = table.Column<int>(type: "INTEGER", nullable: false),
+                    Material = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true),
                     CourseId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Lesson", x => x.Id);
+                    table.PrimaryKey("PK_Lessons", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Lesson_Courses_CourseId",
+                        name: "FK_Lessons_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "Id");
@@ -50,7 +50,7 @@ namespace PlataformaEducacional.ContentManagement.Data.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Lesson_Course_Title",
-                table: "Lesson",
+                table: "Lessons",
                 columns: new[] { "CourseId", "Title" });
         }
 
@@ -58,7 +58,7 @@ namespace PlataformaEducacional.ContentManagement.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Lesson");
+                name: "Lessons");
 
             migrationBuilder.DropTable(
                 name: "Courses");

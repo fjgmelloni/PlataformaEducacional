@@ -8,11 +8,11 @@ using PlataformaEducacional.ContentManagement.Data.Context;
 
 #nullable disable
 
-namespace PlataformaEducacional.ContentManagement.Data.Migrations
+namespace PlataformaEducacional.ContentManagement.Data.Data.Migrations.Content
 {
     [DbContext(typeof(ContentContext))]
-    [Migration("20251028195031_InitialContent")]
-    partial class InitialContent
+    [Migration("20251103131910_InitialContentClean")]
+    partial class InitialContentClean
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,16 +50,18 @@ namespace PlataformaEducacional.ContentManagement.Data.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("CourseId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Material")
+                        .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
                     b.Property<int>("Order")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("SortOrder");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -71,7 +73,7 @@ namespace PlataformaEducacional.ContentManagement.Data.Migrations
                     b.HasIndex("CourseId", "Title")
                         .HasDatabaseName("IX_Lesson_Course_Title");
 
-                    b.ToTable("Lesson", (string)null);
+                    b.ToTable("Lessons", (string)null);
                 });
 
             modelBuilder.Entity("PlataformaEducacional.ContentManagement.Domain.Courses.Course", b =>
