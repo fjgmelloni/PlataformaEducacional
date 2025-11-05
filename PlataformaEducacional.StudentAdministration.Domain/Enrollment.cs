@@ -78,6 +78,8 @@ namespace PlataformaEducacional.StudentAdministration.Domain
             LearningHistory = LearningHistory.Factory.InProgress(totalLessons, newProgress);
         }
 
+        public void AddCertificate(Certificate certificate) => Certificate = certificate;
+
         public void CompleteCourse()
         {
             if (!IsActive())

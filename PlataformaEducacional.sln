@@ -37,6 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testes", "Testes", "{501E98
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlataformaEducacional.StudentAdministration.Domain.Tests", "PlataformaEducacional.StudentAdministration.Domain.Tests\PlataformaEducacional.StudentAdministration.Domain.Tests.csproj", "{24891258-64C8-4227-BCF0-0E0CC0E4CBCA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlataformaEducacional.StudentAdministration.Application.Tests", "PlataformaEducacional.StudentAdministration.Application.Tests\PlataformaEducacional.StudentAdministration.Application.Tests.csproj", "{A1989956-178F-48F6-BE69-37961D4D3459}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,10 @@ Global
 		{24891258-64C8-4227-BCF0-0E0CC0E4CBCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24891258-64C8-4227-BCF0-0E0CC0E4CBCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24891258-64C8-4227-BCF0-0E0CC0E4CBCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1989956-178F-48F6-BE69-37961D4D3459}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1989956-178F-48F6-BE69-37961D4D3459}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1989956-178F-48F6-BE69-37961D4D3459}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1989956-178F-48F6-BE69-37961D4D3459}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -109,6 +115,7 @@ Global
 		{96C759FA-37A2-42CC-AD9F-8E7904A20FAF} = {C69E7900-F82B-4C28-BFF9-7F74E559F9F7}
 		{08541466-0AD3-4379-871F-39D1F814BA1D} = {C69E7900-F82B-4C28-BFF9-7F74E559F9F7}
 		{24891258-64C8-4227-BCF0-0E0CC0E4CBCA} = {501E9840-B0D5-441E-AA7F-4328DDB0216C}
+		{A1989956-178F-48F6-BE69-37961D4D3459} = {501E9840-B0D5-441E-AA7F-4328DDB0216C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E7CD219E-E242-4881-B788-302DE2050349}
