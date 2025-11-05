@@ -34,9 +34,9 @@ namespace PlataformaEducacional.StudentAdministration.Application.Tests.Queries
                 new EnrollmentViewModel(
                     _enrollmentId,
                     _studentId,
-                    "Rinaldo",
+                    "Felíco",
                     _courseId,
-                    "C# Course",
+                    "DevExpert",
                     EnrollmentStatus.Active,
                     DateTime.Now,
                     CourseStatus.NotStarted,
