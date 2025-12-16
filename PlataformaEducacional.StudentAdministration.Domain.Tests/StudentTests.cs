@@ -1,6 +1,5 @@
 ﻿using Bogus;
 using PlataformaEducacional.Core.Domain;
-using PlataformaEducacional.StudentAdministration.Domain;
 
 namespace PlataformaEducacional.StudentAdministration.Domain.Tests
 {

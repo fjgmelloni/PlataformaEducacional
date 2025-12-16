@@ -1,5 +1,4 @@
-﻿using FluentValidation.Results;
-using Moq;
+﻿using Moq;
 using Moq.AutoMock;
 using PlataformaEducacional.Core.Communication.Mediator;
 using PlataformaEducacional.Core.Data;

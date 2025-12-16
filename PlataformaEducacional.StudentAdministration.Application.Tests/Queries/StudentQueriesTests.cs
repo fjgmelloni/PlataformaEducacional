@@ -2,8 +2,6 @@
 using Moq.AutoMock;
 using PlataformaEducacional.StudentAdministration.Application.Features.Students.Queries.ViewModels;
 using PlataformaEducacional.StudentAdministration.Application.Features.Students.Queries;
-using PlataformaEducacional.StudentAdministration.Application.Queries;
-using PlataformaEducacional.StudentAdministration.Application.Queries.ViewModels;
 using PlataformaEducacional.StudentAdministration.Domain;
 using PlataformaEducacional.StudentAdministration.Domain.Repositories;
 
