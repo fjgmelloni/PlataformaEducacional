@@ -29,14 +29,16 @@ namespace PlataformaEducacional.FinancialManagement.Core.Tests
             );
 
             _validEnrollmentPayment = new EnrollmentPayment(
-                Guid.NewGuid(), // EnrollmentId
-                Guid.NewGuid(), // StudentId
-                500,            // Amount
-                "John Doe",
-                "1234567890123456",
-                "06/26",
-                "123"
-            );
+          EnrollmentId: Guid.NewGuid(),
+          StudentId: Guid.NewGuid(),
+          CourseId: Guid.NewGuid(),
+          Amount: 500,
+          CardholderName: "John Doe",
+          CardNumber: "1234567890123456",
+          CardExpiration: "06/26",
+          CardCvv: "123"
+      );
+
         }
 
         [Fact(DisplayName = "Should persist payment and publish success event when transaction is paid")]
@@ -45,7 +47,7 @@ namespace PlataformaEducacional.FinancialManagement.Core.Tests
         {
             // Arrange
             var transaction = new Transaction(Guid.NewGuid(), 500);
-            transaction.UpdateStatus(TransactionStatus.Paid);
+            transaction.ChangeStatus(TransactionStatus.Paid);
 
             _creditCardFacadeMock
                 .Setup(f => f.Charge(It.IsAny<Guid>(), It.IsAny<Payment>()))
@@ -77,7 +79,7 @@ namespace PlataformaEducacional.FinancialManagement.Core.Tests
         {
             // Arrange
             var transaction = new Transaction(Guid.NewGuid(), 500);
-            transaction.UpdateStatus(TransactionStatus.Declined);
+            transaction.ChangeStatus(TransactionStatus.Declined);
 
             _creditCardFacadeMock
                 .Setup(f => f.Charge(It.IsAny<Guid>(), It.IsAny<Payment>()))

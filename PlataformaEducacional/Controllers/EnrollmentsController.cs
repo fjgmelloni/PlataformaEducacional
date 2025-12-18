@@ -40,7 +40,6 @@ namespace PlataformaEducacional.Api.Controllers
             _identityUser = identityUser;
         }
 
-        // === Processar pagamento da matrícula ===
         [HttpPost("{enrollmentId:guid}/payment")]
         [Authorize(Roles = "STUDENT")]
         public async Task<IActionResult> ProcessPayment(Guid enrollmentId, [FromBody] ProcessPaymentRequest request, CancellationToken cancellationToken)
@@ -96,7 +95,6 @@ namespace PlataformaEducacional.Api.Controllers
             return CustomResponse(HttpStatusCode.OK, lesson);
         }
 
-        // === Concluir aula ===
         [HttpPut("{enrollmentId:guid}/complete-lesson/{lessonId:guid}")]
         [Authorize(Roles = "STUDENT")]
         public async Task<IActionResult> CompleteLesson(Guid enrollmentId, Guid lessonId, CancellationToken cancellationToken)

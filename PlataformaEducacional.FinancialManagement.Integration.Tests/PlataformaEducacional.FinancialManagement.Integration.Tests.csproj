@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PlataformaEducacional.FinancialManagement.Core\PlataformaEducacional.FinancialManagement.Core.csproj" />
+    <ProjectReference Include="..\PlataformaEducacional.FinancialManagement.Integration\PlataformaEducacional.FinancialManagement.Integration.csproj" />
   </ItemGroup>
 
   <ItemGroup>
