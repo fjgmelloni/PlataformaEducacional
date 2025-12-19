@@ -38,11 +38,10 @@ namespace PlataformaEducacional.Api.Tests
             );
 
             // Assert
-            response.EnsureSuccessStatusCode();
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
             _fixture.SaveToken(await response.Content.ReadAsStringAsync());
 
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             Assert.True(_fixture.Success);
             Assert.False(string.IsNullOrWhiteSpace(_fixture.Token));
         }
@@ -51,10 +50,9 @@ namespace PlataformaEducacional.Api.Tests
         [Trait("Category", "API - Authentication")]
         public async Task Login_ShouldReturnToken()
         {
-            // Arrange
             var request = new LoginUserRequest
             {
-                Email = "admin@teste.com",
+                Email = "admin@test.com",
                 Password = "Teste@123"
             };
 
@@ -65,11 +63,10 @@ namespace PlataformaEducacional.Api.Tests
             );
 
             // Assert
-            response.EnsureSuccessStatusCode();
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             _fixture.SaveToken(await response.Content.ReadAsStringAsync());
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.True(_fixture.Success);
             Assert.False(string.IsNullOrWhiteSpace(_fixture.Token));
         }
