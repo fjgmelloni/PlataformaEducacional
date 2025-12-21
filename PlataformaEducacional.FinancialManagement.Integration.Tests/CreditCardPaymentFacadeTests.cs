@@ -40,7 +40,7 @@ namespace PlataformaEducacional.FinancialManagement.Integration.Tests
             var payment = new Payment(
                 Guid.NewGuid(),
                 500,
-                new CardData("Rinaldo", "1234567890", "12/29", "123")
+                new CardData("Felicio", "1234567890", "12/29", "123")
             );
 
             _payPalGatewayMock
@@ -66,7 +66,7 @@ namespace PlataformaEducacional.FinancialManagement.Integration.Tests
             var payment = new Payment(
                 Guid.NewGuid(),
                 500,
-                new CardData("Rinaldo", "1234567890", "12/29", "123")
+                new CardData("Felicio", "1234567890", "12/29", "123")
             );
 
             _payPalGatewayMock

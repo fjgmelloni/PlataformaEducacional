@@ -40,7 +40,7 @@ namespace PlataformaEducacional.StudentAdministration.Application.Tests.Commands
         public async Task AddStudentCommandValid_ShouldExecuteSuccessfully()
         {
             // Arrange
-            var command = new AddStudentCommand(Guid.NewGuid(), "Rinaldo");
+            var command = new AddStudentCommand(Guid.NewGuid(), "Felicio");
 
             _mocker.GetMock<IStudentRepository>()
                 .Setup(r => r.UnitOfWork.Commit())
