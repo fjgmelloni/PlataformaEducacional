@@ -14,7 +14,10 @@ namespace PlataformaEducacional.ContentManagement.Domain.Courses
         private readonly List<Lesson> _lessons;
         public IReadOnlyCollection<Lesson> Lessons => _lessons;
 
-        protected Course() { _lessons = new List<Lesson>(); }
+        private Course()
+        {
+            _lessons = new List<Lesson>();
+        }
 
         public Course(string name, Syllabus syllabus, decimal price, bool isAvailable)
         {
