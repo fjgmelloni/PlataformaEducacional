@@ -1,6 +1,7 @@
 ﻿using Moq;
 using Moq.AutoMock;
 using PlataformaEducacional.Core.Communication.Mediator;
+using PlataformaEducacional.Core.Data;
 using PlataformaEducacional.Core.Messages.CommonMessages.Notifications;
 using PlataformaEducacional.StudentAdministration.Application.Features.Students.Commands.GenerateCertificate;
 using PlataformaEducacional.StudentAdministration.Domain;
@@ -22,29 +23,52 @@ namespace PlataformaEducacional.StudentAdministration.Application.Tests.Commands
         [Fact(DisplayName = "Should generate certificate and commit when valid")]
         public async Task Should_Generate_Certificate_And_Commit()
         {
-            // Arrange
             var enrollmentId = Guid.NewGuid();
-            var enrollment = new Enrollment(Guid.NewGuid(), "C# Course", 10, 300);
+            var enrollment = new Enrollment(enrollmentId, "C# Course", 1, 300);
+
             enrollment.AssignStudent(Guid.NewGuid());
+            enrollment.LinkStudent(new Student(enrollment.StudentId, "Felicio"));
+            enrollment.Activate();
+
+            var lesson = new LessonProgress(Guid.NewGuid());
+            lesson.AssignEnrollment(enrollment.Id);
+            enrollment.RecordLesson(lesson);
+            enrollment.CompleteCourse();
 
             _mocker.GetMock<IStudentRepository>()
                 .Setup(r => r.GetEnrollmentWithCertificateById(enrollmentId, default))
                 .ReturnsAsync(enrollment);
 
             _mocker.GetMock<IStudentRepository>()
-                .Setup(r => r.UnitOfWork.Commit())
+                .Setup(r => r.GenerateCertificateAsync(
+                    It.IsAny<Certificate>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
+
+            _mocker.GetMock<IStudentRepository>()
+                .SetupGet(r => r.UnitOfWork)
+                .Returns(_mocker.GetMock<IUnitOfWork>().Object);
+
+            _mocker.GetMock<IUnitOfWork>()
+                .Setup(u => u.Commit())
                 .ReturnsAsync(true);
 
             var command = new GenerateCertificateCommand(enrollmentId);
 
-            // Act
             var result = await _handler.Handle(command, default);
 
-            // Assert
             Assert.True(result);
-            Assert.NotNull(enrollment.Certificate);
-            Assert.Equal(enrollmentId, enrollment.Certificate.EnrollmentId);
+
+            _mocker.GetMock<IStudentRepository>().Verify(
+                r => r.GenerateCertificateAsync(
+                    It.IsAny<Certificate>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
         }
+
+
+
 
         [Fact(DisplayName = "Should notify and return false when enrollment not found")]
         public async Task Should_Return_False_When_Enrollment_Not_Found()

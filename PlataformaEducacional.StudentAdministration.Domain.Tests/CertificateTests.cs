@@ -46,11 +46,9 @@ namespace PlataformaEducacional.StudentAdministration.Domain.Tests
         [Trait("Category", "Certificate - Constructor")]
         public void Certificate_NewCertificate_ShouldThrowWhenEnrollmentIdInvalid()
         {
-            // Arrange & Act
             var ex = Assert.Throws<DomainException>(() => new Certificate(Guid.Empty));
 
-            // Assert
-            Assert.Equal("The enrollment ID is required.", ex.Message);
+            Assert.Equal("Enrollment ID is required.", ex.Message);
         }
     }
 }

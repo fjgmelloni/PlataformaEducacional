@@ -8,7 +8,6 @@ namespace PlataformaEducacional.ContentManagement.Application.Tests.Features.Cou
         [Trait("Category", "Content Management - UpdateCourseCommand")]
         public void UpdateCourseCommand_ShouldBeValid_WhenDataIsCorrect()
         {
-            // Arrange
             var command = new UpdateCourseCommand(
                 Guid.NewGuid(),
                 "C# Course",
@@ -18,10 +17,8 @@ namespace PlataformaEducacional.ContentManagement.Application.Tests.Features.Cou
                 true
             );
 
-            // Act
             var result = command.IsValid();
 
-            // Assert
             Assert.True(result);
         }
 
@@ -41,7 +38,10 @@ namespace PlataformaEducacional.ContentManagement.Application.Tests.Features.Cou
             var result = command.IsValid();
 
             Assert.False(result);
-            Assert.Contains("Course id is required.", command.ValidationResult.Errors);
+            Assert.Contains(
+                "O identificador do curso é obrigatório.",
+                command.ValidationResult.Errors
+            );
         }
 
         [Fact(DisplayName = "Should be invalid when name is empty")]
@@ -60,7 +60,10 @@ namespace PlataformaEducacional.ContentManagement.Application.Tests.Features.Cou
             var result = command.IsValid();
 
             Assert.False(result);
-            Assert.Contains("Course name is required.", command.ValidationResult.Errors);
+            Assert.Contains(
+                "O nome do curso é obrigatório.",
+                command.ValidationResult.Errors
+            );
         }
 
         [Fact(DisplayName = "Should be invalid when syllabus description is empty")]
@@ -80,7 +83,7 @@ namespace PlataformaEducacional.ContentManagement.Application.Tests.Features.Cou
 
             Assert.False(result);
             Assert.Contains(
-                "Syllabus description is required.",
+                "A descrição do curso é obrigatória.",
                 command.ValidationResult.Errors
             );
         }
@@ -102,7 +105,7 @@ namespace PlataformaEducacional.ContentManagement.Application.Tests.Features.Cou
 
             Assert.False(result);
             Assert.Contains(
-                "Course workload must be greater than 0.",
+                "A carga horária deve ser maior que 0.",
                 command.ValidationResult.Errors
             );
         }
@@ -124,7 +127,7 @@ namespace PlataformaEducacional.ContentManagement.Application.Tests.Features.Cou
 
             Assert.False(result);
             Assert.Contains(
-                "Course price must be greater than 0.",
+                "O preço do curso deve ser maior que 0.",
                 command.ValidationResult.Errors
             );
         }

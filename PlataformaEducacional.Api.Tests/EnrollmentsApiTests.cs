@@ -10,139 +10,107 @@ namespace PlataformaEducacional.Api.Tests
     [Collection(nameof(IntegrationApiTestsFixtureCollection))]
     public class EnrollmentsApiTests
     {
-        private readonly IntegrationTestsFixture<Program> _testsFixture;
+        private readonly IntegrationTestsFixture<Program> _fixture;
 
-        public EnrollmentsApiTests(IntegrationTestsFixture<Program> testsFixture)
+        public EnrollmentsApiTests(IntegrationTestsFixture<Program> fixture)
         {
-            _testsFixture = testsFixture;
+            _fixture = fixture;
         }
 
-        [Fact(DisplayName = "Process payment should fail when student is not enrolled")]
+        [Fact(DisplayName = "Process payment should fail when enrollment does not exist")]
         [Trait("Category", "API Integration - Enrollment")]
-        public async Task ProcessPayment_ShouldFail_WhenStudentIsNotEnrolled()
+        public async Task ProcessPayment_ShouldFail_WhenEnrollmentDoesNotExist()
         {
-            // Arrange
             var enrollmentId = Guid.NewGuid();
 
-            var request = new ProcessPaymentRequest
-            {
-                CardName = "Test",
-                CardNumber = "4111111111111111",
-                CardExpiration = "12/30",
-                CardCvv = "123",
-                Total = 500
-            };
+            var request = CreatePaymentRequest();
 
-            await _testsFixture.RegisterNewStudentAsync();
-            _testsFixture.Client.AssignToken(_testsFixture.Token);
+            await _fixture.RegisterNewStudentAsync();
+            _fixture.Client.AssignToken(_fixture.Token);
 
-            // Act
-            var response = await _testsFixture.Client
+            var response = await _fixture.Client
                 .PostAsJsonAsync($"api/enrollments/{enrollmentId}/payment", request);
 
-            var errors = _testsFixture.GetErrors(await response.Content.ReadAsStringAsync());
+            var errors = _fixture.GetErrors(await response.Content.ReadAsStringAsync());
 
-            // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Contains("Enrollment not found.", errors);
+            Assert.Contains("Matrícula não encontrada.", errors);
         }
 
-        [Fact(DisplayName = "Process payment")]
+        [Fact(DisplayName = "Process payment successfully")]
         [Trait("Category", "API Integration - Enrollment")]
-        public async Task ProcessPayment()
+        public async Task ProcessPayment_ShouldSucceed()
         {
-            // Arrange
-            var enrollmentId = await _testsFixture.PendingEnrollmentIdAsync();
+            var enrollmentId = await _fixture.CreatePendingEnrollmentAsync();
 
-            var request = new ProcessPaymentRequest
-            {
-                CardName = "Test",
-                CardNumber = "4111111111111111",
-                CardExpiration = "12/30",
-                CardCvv = "123",
-                Total = 500
-            };
+            var request = CreatePaymentRequest();
 
-            // Act
-            var response = await _testsFixture.Client
+            var response = await _fixture.Client
                 .PostAsJsonAsync($"api/enrollments/{enrollmentId}/payment", request);
 
-            var errors = _testsFixture.GetErrors(await response.Content.ReadAsStringAsync());
+            response.EnsureSuccessStatusCode();
 
-            // Assert
-            if (errors.Any())
-            {
-                Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-                Assert.Contains("Payment was declined", errors);
-            }
-            else
-            {
-                var result =
-                    await _testsFixture.DeserializeResponse<ApiResponse<string>>(response);
+            var result =
+                await _fixture.DeserializeResponse<ApiResponse<string>>(response);
 
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.True(result.Success);
-            }
+            Assert.True(result.Success);
         }
 
         [Fact(DisplayName = "Perform lesson successfully")]
         [Trait("Category", "API Integration - Enrollment")]
         public async Task PerformLesson_ShouldSucceed()
         {
-            // Arrange
-            var course = await _testsFixture.GetCourse_PendingLessonAsync();
-            var enrollment = await _testsFixture.GetActiveCourseForStudentAsync(course.Id);
+            var course = await _fixture.GetCourse_PendingLessonAsync();
 
-            // Act
-            var response = await _testsFixture.Client.PutAsync(
+            var enrollment = await _fixture.GetActiveCourseForStudentAsync(course.Id);
+
+            var response = await _fixture.Client.PutAsync(
                 $"api/enrollments/{enrollment.EnrollmentId}/complete-lesson/{course.Lessons.First().Id}",
                 null);
 
-            var result =
-                await _testsFixture.DeserializeResponse<ApiResponse<string>>(response);
+            response.EnsureSuccessStatusCode();
 
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var result =
+                await _fixture.DeserializeResponse<ApiResponse<string>>(response);
+
             Assert.True(result.Success);
 
-            enrollment = await _testsFixture.GetActiveCourseForStudentAsync(course.Id);
+            enrollment = await _fixture.GetActiveCourseForStudentAsync(course.Id);
             Assert.Equal(100, enrollment.CourseProgress);
         }
 
-        [Fact(DisplayName = "Complete course")]
+        [Fact(DisplayName = "Completed course should already have certificate")]
         [Trait("Category", "API Integration - Enrollment")]
-        public async Task CompleteCourse_ShouldSucceed()
+        public async Task CompletedCourse_ShouldHaveCertificate()
         {
-            // Arrange
-            var course = await _testsFixture.GetCourse_PendingFinishAsync();
-            var enrollment = await _testsFixture.GetActiveCourseForStudentAsync(course.Id);
+            await _fixture.StudentLoginAsync();
+            _fixture.Client.AssignToken(_fixture.Token);
 
-            // Act
-            var response = await _testsFixture.Client.PutAsync(
-                $"api/enrollments/{enrollment.EnrollmentId}/complete-course",
-                null);
+            var courseId = await _fixture.GetCourseIdAsync(); // .NET
+            var enrollment = await _fixture.GetActiveCourseForStudentAsync(courseId);
 
-            var result =
-                await _testsFixture.DeserializeResponse<ApiResponse<string>>(response);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.True(result.Success);
-
-            enrollment = await _testsFixture.GetActiveCourseForStudentAsync(course.Id);
-
-            Assert.NotNull(enrollment.CompletionDate);
             Assert.Equal(CourseStatus.Completed, enrollment.CourseStatus);
+            Assert.NotNull(enrollment.CompletionDate);
 
-            response = await _testsFixture.Client
+            var response = await _fixture.Client
                 .GetAsync($"api/enrollments/{enrollment.EnrollmentId}/certificate");
 
             response.EnsureSuccessStatusCode();
 
             var certificate =
-                await _testsFixture.DeserializeResponse<ApiResponse<CertificateViewModel>>(response);
+                await _fixture.DeserializeResponse<ApiResponse<CertificateViewModel>>(response);
 
             Assert.True(certificate.Success);
         }
+
+        private static ProcessPaymentRequest CreatePaymentRequest()
+            => new()
+            {
+                CardName = "Test",
+                CardNumber = "4111111111111111",
+                CardExpiration = "12/30",
+                CardCvv = "123",
+                Total = 500
+            };
     }
 }

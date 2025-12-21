@@ -7,6 +7,7 @@ namespace PlataformaEducacional.Core.Domain
     public abstract class Entity
     {
         public Guid Id { get; set; }
+
         protected Entity()
         {
             Id = Guid.NewGuid();
@@ -15,8 +16,22 @@ namespace PlataformaEducacional.Core.Domain
         private readonly List<Event> _domainEvents = new();
         public IReadOnlyCollection<Event> DomainEvents => _domainEvents.AsReadOnly();
 
-        protected void AddDomainEvent(Event @event) => _domainEvents.Add(@event);
-        protected void RemoveDomainEvent(Event @event) => _domainEvents.Remove(@event);
+        protected void AddDomainEvent(Event @event)
+        {
+            if (@event is null)
+                throw new ArgumentNullException(nameof(@event));
+
+            _domainEvents.Add(@event);
+        }
+
+        protected void RemoveDomainEvent(Event @event)
+        {
+            if (@event is null)
+                return;
+
+            _domainEvents.Remove(@event);
+        }
+
         public void ClearDomainEvents() => _domainEvents.Clear();
 
         public override bool Equals(object? obj)
@@ -29,10 +44,13 @@ namespace PlataformaEducacional.Core.Domain
         public static bool operator ==(Entity? a, Entity? b) => Equals(a, b);
         public static bool operator !=(Entity? a, Entity? b) => !(a == b);
 
-        public override int GetHashCode() => (GetType().GetHashCode() * 907) + Id.GetHashCode();
+        public override int GetHashCode() =>
+            (GetType().GetHashCode() * 907) + Id.GetHashCode();
 
-        public override string ToString() => $"{GetType().Name} [Id={Id}]";
+        public override string ToString() =>
+            $"{GetType().Name} [Id={Id}]";
 
-        public virtual bool IsValid() => throw new NotImplementedException();
+        public virtual bool IsValid() =>
+            throw new NotImplementedException();
     }
 }

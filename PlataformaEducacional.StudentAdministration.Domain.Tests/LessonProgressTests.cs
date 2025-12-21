@@ -39,7 +39,7 @@ namespace PlataformaEducacional.StudentAdministration.Domain.Tests
                 () => new LessonProgress(invalidLessonId)
             );
 
-            Assert.Equal("The lesson ID is required.", exception.Message);
+            Assert.Equal("Lesson ID is required.", exception.Message);
         }
 
         [Fact(DisplayName = "AssignEnrollment should correctly set EnrollmentId")]
@@ -69,7 +69,7 @@ namespace PlataformaEducacional.StudentAdministration.Domain.Tests
                 () => progress.AssignEnrollment(invalidEnrollmentId)
             );
 
-            Assert.Equal("The enrollment ID is required.", exception.Message);
+            Assert.Equal("Enrollment ID is required.", exception.Message);
         }
     }
 }

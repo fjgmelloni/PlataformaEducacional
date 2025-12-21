@@ -9,7 +9,7 @@ namespace PlataformaEducacional.StudentAdministration.Application.Tests.Commands
         public void AddStudentCommand_IsValid_WhenCorrectData()
         {
             // Arrange
-            var command = new AddStudentCommand(Guid.NewGuid(), "Rinaldo");
+            var command = new AddStudentCommand(Guid.NewGuid(), "Felicio");
 
             // Act
             var result = command.IsValid();
@@ -38,15 +38,12 @@ namespace PlataformaEducacional.StudentAdministration.Application.Tests.Commands
         [Trait("Category", "AddStudentCommand")]
         public void AddStudentCommand_ShouldBeInvalid_WhenUserIdEmpty()
         {
-            // Arrange
-            var command = new AddStudentCommand(Guid.Empty, "Rinaldo");
+            var command = new AddStudentCommand(Guid.Empty, "Felicio");
 
-            // Act
             var result = command.IsValid();
 
-            // Assert
             Assert.False(result);
-            Assert.Contains("Student name is required.", command.ValidationResult.Errors);
+            Assert.Contains("User ID is required.", command.ValidationResult.Errors);
         }
     }
 }

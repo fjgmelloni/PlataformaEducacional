@@ -27,43 +27,40 @@ namespace PlataformaEducacional.StudentAdministration.Application.Tests.Queries
         public async Task GetPendingPaymentEnrollmentsByStudentId_WhenDataExists_ShouldReturnEnrollmentViewModels()
         {
             // Arrange
-            var enrollmentViewModels = new List<EnrollmentViewModel>
-            {
-                new EnrollmentViewModel(
-                    _enrollmentId,
-                    _studentId,
-                    "Felíco",
-                    _courseId,
-                    "DevExpert",
-                    EnrollmentStatus.Active,
-                    DateTime.Now,
-                    CourseStatus.NotStarted,
-                    null,
-                    0
-                )
-            };
-
             var student = new Student(_studentId, "Felíco");
-            var enrollment = new Enrollment(_courseId, "DevExpert", 5, 500);
 
+            var enrollment = new Enrollment(_courseId, "DevExpert", 5, 500);
             enrollment.AssignStudent(_studentId);
+            enrollment.LinkStudent(student); // 🔥 ISSO FALTAVA
 
             var domainEnrollments = new List<Enrollment> { enrollment };
 
             _mocker.GetMock<IStudentRepository>()
-                .Setup(r => r.GetPendingPaymentEnrollmentsByStudentId(_studentId, It.IsAny<CancellationToken>()))
+                .Setup(r => r.GetPendingPaymentEnrollmentsByStudentId(
+                    _studentId,
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(domainEnrollments);
 
             // Act
-            var result = await _queries.GetPendingPaymentEnrollmentsByStudentId(_studentId, CancellationToken.None);
+            var result = await _queries.GetPendingPaymentEnrollmentsByStudentId(
+                _studentId,
+                CancellationToken.None);
 
             // Assert
             _mocker.GetMock<IStudentRepository>().Verify(
-                r => r.GetPendingPaymentEnrollmentsByStudentId(_studentId, It.IsAny<CancellationToken>()),
+                r => r.GetPendingPaymentEnrollmentsByStudentId(
+                    _studentId,
+                    It.IsAny<CancellationToken>()),
                 Times.Once);
 
             Assert.NotEmpty(result);
-            Assert.Equal(enrollmentViewModels.Count, result.Count());
+            Assert.Single(result);
+
+            var viewModel = result.First();
+            Assert.Equal(_studentId, viewModel.StudentId);
+            Assert.Equal("Felíco", viewModel.StudentName);
+            Assert.Equal("DevExpert", viewModel.CourseName);
         }
+
     }
 }

@@ -20,8 +20,9 @@ namespace PlataformaEducacional.Api.Tests
         [Trait("Category", "API - Authentication")]
         public async Task RegisterStudent_ShouldReturnToken()
         {
-            // Arrange
             _fixture.SetupUserData();
+
+            using var client = _fixture.Factory.CreateClient();
 
             var request = new RegisterUserRequest
             {
@@ -31,13 +32,11 @@ namespace PlataformaEducacional.Api.Tests
                 ConfirmPassword = _fixture.Password
             };
 
-            // Act
-            var response = await _fixture.Client.PostAsJsonAsync(
+            var response = await client.PostAsJsonAsync(
                 "/api/authentication/register/student",
                 request
             );
 
-            // Assert
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
             _fixture.SaveToken(await response.Content.ReadAsStringAsync());
@@ -50,19 +49,19 @@ namespace PlataformaEducacional.Api.Tests
         [Trait("Category", "API - Authentication")]
         public async Task Login_ShouldReturnToken()
         {
+            using var client = _fixture.Factory.CreateClient();
+
             var request = new LoginUserRequest
             {
                 Email = "admin@test.com",
                 Password = "Teste@123"
             };
 
-            // Act
-            var response = await _fixture.Client.PostAsJsonAsync(
+            var response = await client.PostAsJsonAsync(
                 "/api/authentication/login",
                 request
             );
 
-            // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             _fixture.SaveToken(await response.Content.ReadAsStringAsync());

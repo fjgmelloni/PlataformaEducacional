@@ -58,7 +58,9 @@ namespace PlataformaEducacional.StudentAdministration.Application.Tests.Commands
             var command = new CompleteEnrollmentCommand(Guid.NewGuid(), Guid.NewGuid());
 
             _mocker.GetMock<IStudentRepository>()
-                .Setup(r => r.GetEnrollmentWithStudentById(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .Setup(r => r.GetEnrollmentWithStudentById(
+                    It.IsAny<Guid>(),
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Enrollment)null!);
 
             // Act
@@ -66,10 +68,17 @@ namespace PlataformaEducacional.StudentAdministration.Application.Tests.Commands
 
             // Assert
             Assert.False(result);
+
             _mocker.GetMock<IMediatorHandler>().Verify(
-                m => m.PublishNotificationAsync(It.Is<DomainNotification>(n => n.Value == "Enrollment not found.")),
-                Times.Once);
+                m => m.PublishNotificationAsync(
+                    It.Is<DomainNotification>(n =>
+                        n.Key == "Enrollment" &&
+                        n.Value == "Matrícula não encontrada.")
+                ),
+                Times.Once
+            );
         }
+
 
         [Fact(DisplayName = "Should return false and publish validation errors when command invalid")]
         [Trait("Category", "CompleteEnrollmentCommandHandler")]

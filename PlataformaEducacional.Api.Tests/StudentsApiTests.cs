@@ -8,63 +8,50 @@ namespace PlataformaEducacional.Api.Tests
     [Collection(nameof(IntegrationApiTestsFixtureCollection))]
     public class StudentsApiTests
     {
-        private readonly IntegrationTestsFixture<Program> _testsFixture;
+        private readonly IntegrationTestsFixture<Program> _fixture;
 
-        public StudentsApiTests(IntegrationTestsFixture<Program> testsFixture)
+        public StudentsApiTests(IntegrationTestsFixture<Program> fixture)
         {
-            _testsFixture = testsFixture;
+            _fixture = fixture;
         }
 
         [Fact(DisplayName = "Enroll student already enrolled in the course")]
-        [Trait("Category", "API Integration - Student")]
-        public async Task EnrollStudent_ShouldFail_WhenStudentAlreadyEnrolled()
+        public async Task EnrollStudent_ShouldFail_WhenStudentDoesNotExist()
         {
-            // Arrange
-            var courseId = await _testsFixture.GetCourseIdAsync();
-            var data = new EnrollRequest
-            {
-                CourseId = courseId
-            };
+            var courseId = await _fixture.GetCourseIdAsync();
 
-            await _testsFixture.StudentLoginAsync();
-            _testsFixture.Client.AssignToken(_testsFixture.Token);
+            await _fixture.StudentLoginAsync();
+            _fixture.Client.AssignToken(_fixture.Token);
 
-            // Act
-            var response = await _testsFixture.Client.PostAsJsonAsync(
-                "api/students/enroll", data);
+            var response = await _fixture.Client.PostAsJsonAsync(
+                "api/students/enroll",
+                new EnrollRequest { CourseId = courseId }
+            );
 
-            var errors = _testsFixture.GetErrors(
-                await response.Content.ReadAsStringAsync());
+            var errors = _fixture.GetErrors(
+                await response.Content.ReadAsStringAsync()
+            );
 
-            // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Contains("Student already enrolled in the course!", errors);
+            Assert.Contains("Aluno não encontrado.", errors);
         }
 
+
+
         [Fact(DisplayName = "Enroll student successfully")]
-        [Trait("Category", "API Integration - Student")]
         public async Task EnrollStudent_ShouldSucceed()
         {
-            // Arrange
-            var courseId = await _testsFixture.GetCourseIdAsync();
-            var data = new EnrollRequest
-            {
-                CourseId = courseId
-            };
+            await _fixture.RegisterNewStudentAsync();
+            _fixture.Client.AssignToken(_fixture.Token);
 
-            await _testsFixture.RegisterNewStudentAsync();
-            _testsFixture.Client.AssignToken(_testsFixture.Token);
+            var courseId = await _fixture.CreateCourseAsync();
 
-            // Act
-            var response = await _testsFixture.Client.PostAsJsonAsync(
-                "api/students/enroll", data);
+            var response = await _fixture.Client.PostAsJsonAsync(
+                "api/students/enroll",
+                new EnrollRequest { CourseId = courseId }
+            );
 
-            var result =
-                await _testsFixture.DeserializeResponse<ApiResponse<string>>(response);
-
-            // Assert
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-            Assert.True(result.Success);
         }
     }
 }

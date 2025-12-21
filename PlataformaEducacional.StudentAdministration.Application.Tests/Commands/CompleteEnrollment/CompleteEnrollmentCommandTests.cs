@@ -16,9 +16,9 @@ namespace PlataformaEducacional.StudentAdministration.Application.Tests.Commands
 
             // Assert
             Assert.False(result);
-            Assert.Contains("Student is required.", command.ValidationResult.Errors);
-
+            Assert.Contains("O ID do aluno é obrigatório.", command.ValidationResult.Errors);
         }
+
 
         [Fact(DisplayName = "Must be valid when StudentId is valid")]
         [Trait("Category", "CompleteEnrollmentCommand")]
@@ -33,7 +33,6 @@ namespace PlataformaEducacional.StudentAdministration.Application.Tests.Commands
             // Assert
             Assert.True(result);
         }
-
         [Fact(DisplayName = "Must be invalid when EnrollmentId is Guid.Empty")]
         [Trait("Category", "CompleteEnrollmentCommand")]
         public void EnrollmentId_WhenEmpty_ShouldBeInvalid()
@@ -46,8 +45,7 @@ namespace PlataformaEducacional.StudentAdministration.Application.Tests.Commands
 
             // Assert
             Assert.False(result);
-            Assert.Contains("Enrollment is required.", command.ValidationResult.Errors);
-
+            Assert.Contains("O ID da matrícula é obrigatório.", command.ValidationResult.Errors);
         }
     }
 }
